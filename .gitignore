@@ -12,6 +12,7 @@ buildNumber.properties
 ### Java template
 *.class
 
+/local_runner/result.txt
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

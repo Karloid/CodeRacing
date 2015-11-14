@@ -3,6 +3,8 @@ import model.*;
 import static java.lang.Math.*;
 
 public final class MyStrategy implements Strategy {
+    private static final boolean DEBUG = true;
+
     private Car self;
     private World world;
     private Game game;
@@ -13,6 +15,7 @@ public final class MyStrategy implements Strategy {
     private double angleToWaypoint;
     private double nextX;
     private double nextY;
+    private double distanceToWaypoint;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -23,6 +26,17 @@ public final class MyStrategy implements Strategy {
         this.move = move;
 
         doMove();
+
+        log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
+    }
+
+    private String f(double distanceToWaypoint) {
+        return String.format("%.2f", distanceToWaypoint);
+    }
+
+    private void log(String string) {
+        if (DEBUG)
+            System.out.println(world.getTick() + " - " + string);
     }
 
     private void doMove() {
@@ -30,12 +44,21 @@ public final class MyStrategy implements Strategy {
 
         if (speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI) {
             move.setBrake(true);
+        } else if (isTimeForNitro()) {
+            move.setUseNitro(true);
+            log("!!! use nitro!");
         }
+    }
+
+    private boolean isTimeForNitro() {
+        return abs(angleToWaypoint) < 0.1f && distanceToWaypoint > 1000 && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
     private void doWheelTurn() {
         nextX = (self.getNextWaypointX() + 0.5) * game.getTrackTileSize();
         nextY = (self.getNextWaypointY() + 0.5) * game.getTrackTileSize();
+
+        distanceToWaypoint = self.getDistanceTo(nextX, nextY);
 
         double cornerTileOffset = 0.25D * game.getTrackTileSize();
 

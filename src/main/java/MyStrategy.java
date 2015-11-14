@@ -8,6 +8,12 @@ public final class MyStrategy implements Strategy {
     private Game game;
     private Move move;
 
+
+    private double speedModule;
+    private double angleToWaypoint;
+    private double nextX;
+    private double nextY;
+
     @Override
     public void move(Car self, World world, Game game, Move move) {
 
@@ -20,8 +26,16 @@ public final class MyStrategy implements Strategy {
     }
 
     private void doMove() {
-        double nextX = (self.getNextWaypointX() + 0.5) * game.getTrackTileSize();
-        double nextY = (self.getNextWaypointY() + 0.5) * game.getTrackTileSize();
+        doWheelTurn();
+
+        if (speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI) {
+            move.setBrake(true);
+        }
+    }
+
+    private void doWheelTurn() {
+        nextX = (self.getNextWaypointX() + 0.5) * game.getTrackTileSize();
+        nextY = (self.getNextWaypointY() + 0.5) * game.getTrackTileSize();
 
         double cornerTileOffset = 0.25D * game.getTrackTileSize();
 
@@ -45,14 +59,11 @@ public final class MyStrategy implements Strategy {
             default:
         }
 
-        double angleTo = self.getAngleTo(nextX, nextY);
-        double speedModule = hypot(self.getSpeedX(), self.getSpeedY());
+        angleToWaypoint = self.getAngleTo(nextX, nextY);
+        speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-        move.setWheelTurn(angleTo * 32d / PI);
-        move.setEnginePower(0.75);
-        if (speedModule * speedModule * abs(angleTo) > 2.5 * 2.5 * PI) {
-            move.setBrake(true);
-        }
+        move.setWheelTurn(angleToWaypoint * 32d / PI);
+        move.setEnginePower(1);
     }
 
     private TileType getTileType() {

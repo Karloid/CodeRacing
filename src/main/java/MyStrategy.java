@@ -53,6 +53,7 @@ public final class MyStrategy implements Strategy {
     private int[] lastWaypoint;
     private int lastWaypointInd;
     private HashMap<String, List<int[]>> slowTilesMap;
+    private HashMap<String, List<int[]>> nitroTilesMap;
     private Map<String, int[][]> customMapWaypoints;
     private int[] tmpWaypointTile;
 
@@ -441,13 +442,23 @@ public final class MyStrategy implements Strategy {
         boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
         if (slowTile) log("is slowTile!");
 
-        return angleStuff || tooFast || tooFastCorner || slowTile;
+        return (angleStuff || tooFast || tooFastCorner || slowTile) && (!haveWaypoints() || !isNitroTitle());
     }
 
     private boolean isSlowTile() {
         int[] curTile = getCurTile();
         for (int[] slowTile : getSlowTiles()) {
             if (tilesIsEqual(curTile, slowTile)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNitroTitle() {
+        int[] curTile = getCurTile();
+        for (int[] nitroTile : getNitroTiles()) {
+            if (tilesIsEqual(curTile, nitroTile)) {
                 return true;
             }
         }
@@ -476,8 +487,42 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 4}
             ));
+            slowTilesMap.put(MAP_06, Arrays.asList(
+                    new int[]{7, 12},
+                    new int[]{8, 12},
+                    new int[]{9, 12},
+                    new int[]{9, 13}
+            ));
         }
         List<int[]> slowTiles = slowTilesMap.get(world.getMapName());
+        if (slowTiles == null) {
+            slowTiles = new ArrayList<>();
+        }
+        return slowTiles;
+    }
+
+    private List<int[]> getNitroTiles() {
+        if (nitroTilesMap == null) {
+            nitroTilesMap = new HashMap<>();
+            nitroTilesMap.put(MAP_06, Arrays.asList(
+                    new int[]{12, 15},
+                    new int[]{11, 15},
+                    new int[]{10, 15},
+                    new int[]{9, 15},
+                    new int[]{8, 15},
+                    new int[]{7, 15},
+                    new int[]{0, 12},
+                    new int[]{0, 11},
+                    new int[]{0, 10},
+                    new int[]{0, 9},
+                    new int[]{0, 8},
+                    new int[]{3, 4},
+                    new int[]{3, 5},
+                    new int[]{3, 6},
+                    new int[]{3, 7}
+            ));
+        }
+        List<int[]> slowTiles = nitroTilesMap.get(world.getMapName());
         if (slowTiles == null) {
             slowTiles = new ArrayList<>();
         }
@@ -491,6 +536,9 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isTimeForNitro() { //TODO
+        if (haveWaypoints()) {
+            return isNitroTitle() && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+        }
         return abs(angleToWaypoint) < 0.1f && (distanceToWaypoint > game.getTrackTileSize() * 3 || curWaypointInd == 0) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
@@ -612,8 +660,8 @@ public final class MyStrategy implements Strategy {
         if (isMap(MAP_03) && tilesIsEqual(new int[]{3, 0}, tmpWaypointTile)) {
             tileType = TileType.LEFT_TOP_CORNER;
         } else if (isMap(MAP_06)) {
-            tileType = getHackyTileType(tileType, new int[]{2,13}, TileType.LEFT_TOP_CORNER);
-            tileType = getHackyTileType(tileType, new int[]{7,13}, TileType.RIGHT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{2, 13}, TileType.LEFT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{7, 13}, TileType.RIGHT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{9, 13}, TileType.LEFT_BOTTOM_CORNER);
         }
 
@@ -971,6 +1019,11 @@ public final class MyStrategy implements Strategy {
             g2.setColor(new Color(0xC78FB3));
             for (int[] xy : getSlowTiles()) {
                 g2.fillRect(dSizeW(xy[X]) + margin * 3, dSizeW(xy[Y]) + margin * 3, rectSize - margin * 6, rectSize - margin * 6);
+            }
+
+            g2.setColor(new Color(0xDD2CC9));
+            for (int[] xy : getNitroTiles()) {
+                g2.fillOval(dSizeW(xy[X]) + margin * 3, dSizeW(xy[Y]) + margin * 3, rectSize - margin * 6, rectSize - margin * 6);
             }
         }
 

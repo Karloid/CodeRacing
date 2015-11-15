@@ -1,5 +1,9 @@
 import model.*;
 
+import javax.swing.*;
+
+import java.awt.*;
+
 import static java.lang.Math.*;
 
 public final class MyStrategy implements Strategy {
@@ -17,6 +21,11 @@ public final class MyStrategy implements Strategy {
     private double nextY;
     private double distanceToWaypoint;
 
+    private JFrame frame;
+    private MyPanel panel;
+    private Graphics2D dG;
+    private int sidePadding = 46;
+
     @Override
     public void move(Car self, World world, Game game, Move move) {
 
@@ -28,6 +37,7 @@ public final class MyStrategy implements Strategy {
         doMove();
 
         log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
+        drawWindow();
     }
 
     private String f(double distanceToWaypoint) {
@@ -91,5 +101,83 @@ public final class MyStrategy implements Strategy {
 
     private TileType getTileType() {
         return world.getTilesXY()[self.getNextWaypointX()][self.getNextWaypointY()];
+    }
+
+    @SuppressWarnings("MagicConstant")
+    private void drawWindow() {
+        if (!DEBUG)
+            return;
+
+        if (frame == null) {
+            frame = new JFrame();
+            frame.setSize(dSize(world.getWidth() * game.getTrackTileSize()) + sidePadding * 2, dSize(world.getHeight() * game.getTrackTileSize()) + sidePadding * 2);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+            panel = new MyPanel();
+            frame.add(panel);
+        }
+
+        frame.repaint();
+    }
+
+    private int dSize(double v, int padding) {
+        return (int) (v / 12) + padding;
+    }
+
+    private int dSize(double x) {
+        return dSize(x, MyStrategy.this.sidePadding);
+    }
+
+    private class MyPanel extends JPanel {
+
+        private Graphics2D g2;
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            g2 = (Graphics2D) g;
+            g2.setColor(Color.WHITE);
+            g2.fillRect(sidePadding, sidePadding, panel.getWidth() - sidePadding * 2, panel.getHeight() - sidePadding * 2);
+            drawCars();
+
+            drawMyLines();
+        }
+
+        private void drawMyLines() {
+            g2.setColor(Color.green);
+            g2.drawLine(dSize(self.getX()), dSize(self.getY()), dSize(nextX), dSize(nextY));
+        }
+
+        private void drawCars() {
+            int width = dSize(game.getCarWidth(), 0);
+            int height = dSize(game.getCarHeight(), 0);
+
+            for (Car car : world.getCars()) {
+                Graphics2D gg = (Graphics2D) g2.create();
+
+                gg.setColor(car.getPlayerId() == world.getMyPlayer().getId() ? Color.green : Color.red);
+                int x = (int) (dSize(car.getX()) + width / 2d);
+                int y = (int) (dSize(car.getY()) + height / 2d);
+
+                Rectangle r = new Rectangle(
+                        (int) (0 - width / 2d), (int) (0 - height / 2d),
+                        width, height);
+
+                gg.translate(x, y);
+                gg.rotate(car.getAngle());
+                gg.draw(r);
+                gg.fill(r);
+
+                gg.dispose();
+
+                /*
+                g2.rotate(0);
+                g2.draw(rect2);
+                g2.fill(rect2);*/
+            }
+        }
+
+
     }
 }

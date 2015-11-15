@@ -515,7 +515,7 @@ public final class MyStrategy implements Strategy {
 
     private FPoint[] getPointsFromWayPoint(int waypointX, int waypointY) {
 
-        double cornerTileOffset = 0.4D * game.getTrackTileSize();
+        double cornerTileOffset = 0.5D * game.getTrackTileSize();
 
         int topX = (int) (waypointX * game.getTrackTileSize());
         int topY = (int) (waypointY * game.getTrackTileSize());
@@ -530,22 +530,31 @@ public final class MyStrategy implements Strategy {
         if (isMap(MAP_03) && tilesIsEqual(new int[]{3, 0}, new int[]{waypointX, waypointY})) {
             tileType = TileType.LEFT_TOP_CORNER;
         }
+        double cornerTileSideOffset = cornerTileOffset / 6;
         switch (tileType) {
             case LEFT_TOP_CORNER:
                 topX += cornerTileOffset;
                 topY += cornerTileOffset;
+                botX += cornerTileSideOffset;
+                botY += cornerTileSideOffset;
                 break;
             case RIGHT_TOP_CORNER:
                 botX -= cornerTileOffset;
                 topY += cornerTileOffset;
+                topX -= cornerTileSideOffset;
+                botY += cornerTileSideOffset;
                 break;
             case LEFT_BOTTOM_CORNER:
                 topX += cornerTileOffset;
                 botY -= cornerTileOffset;
+                botX += cornerTileSideOffset;
+                topY -= cornerTileSideOffset;
                 break;
             case RIGHT_BOTTOM_CORNER:
                 botX -= cornerTileOffset;
                 botY -= cornerTileOffset;
+                topX -= cornerTileSideOffset;
+                topY -= cornerTileSideOffset;
                 break;
         }
 

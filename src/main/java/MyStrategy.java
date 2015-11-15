@@ -3,7 +3,8 @@ import model.*;
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.geom.Arc2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public final class MyStrategy implements Strategy {
     private static final boolean DEBUG = true;
     public static final int X = 0;
     public static final int Y = 1;
+    public static final double debugKoef = 16d;
 
     private Car self;
     private World world;
@@ -33,6 +35,7 @@ public final class MyStrategy implements Strategy {
     private double pointTileOffset;
     private int curWaypointInd;
     private List<FPoint[]> tilesPoints;
+    private int[][] map3;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -46,26 +49,80 @@ public final class MyStrategy implements Strategy {
 
         doMove();
 
-        log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
+        //log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
         drawWindow();
     }
 
     private void findCurrentWaypoint() {
-        boolean find = false;
-        for (; curWaypointInd < world.getWaypoints().length; curWaypointInd++) {
-            int[] xy = world.getWaypoints()[curWaypointInd];
-            if (xy[0] == self.getNextWaypointX() && xy[1] == self.getNextWaypointY()) {
-                find = true;
-                break;
+        if (world.getMapName().equals("map03")) {
+            int[] currentTile = getWaypoints()[curWaypointInd];
+            if ((int) (self.getX() / game.getTrackTileSize()) == currentTile[0] && (int) (self.getY() / game.getTrackTileSize()) == currentTile[1]) {
+                curWaypointInd++;
+                if (curWaypointInd >= getWaypoints().length) {
+                    curWaypointInd = 0;
+                }
+            }
+        } else {
+            boolean find = false;
+            int realNextX = getNextWaypointX();
+            int realNextY = getNextWaypointY();
+            for (; curWaypointInd < getWaypoints().length; curWaypointInd++) {
+                int[] xy = getWaypoints()[curWaypointInd];
+                if (xy[0] == realNextX && xy[1] == realNextY) {
+                    find = true;
+                    break;
+                }
+            }
+            if (!find) {
+                curWaypointInd = 0;
+                int[] xy = getWaypoints()[curWaypointInd];
+                if (xy[0] != realNextX || xy[1] != realNextY) {
+                    log("SUPER ERROR: Incorrect waypoint index");
+                }
             }
         }
-        if (!find) {
-            curWaypointInd = 0;
-            int[] xy = world.getWaypoints()[curWaypointInd];
-            if (xy[0] != self.getNextWaypointX() || xy[1] != self.getNextWaypointY()) {
-                log("SUPER ERROR: Incorrect waypoint index");
-            }
+    }
+
+    private int getNextWaypointX() {
+        return self.getNextWaypointX();
+    }
+
+    private int[][] getWaypoints() {
+        if (world.getMapName().equals("map03")) {
+            return getMap03Waypoints();
         }
+        return world.getWaypoints();
+    }
+
+    private int[][] getMap03Waypoints() {
+        if (map3 == null) {
+            map3 = new int[][]{
+                    new int[]{2, 6},
+                    new int[]{2, 5},
+                    new int[]{2, 4},
+                    new int[]{3, 4},
+                    new int[]{3, 3},
+                    new int[]{3, 2},
+                    new int[]{3, 1},
+                    new int[]{3, 0},
+                    new int[]{4, 0},
+                    new int[]{4, 1},
+                    new int[]{5, 1},
+                    new int[]{5, 2},
+                    new int[]{5, 2},
+                    new int[]{6, 2},
+                    new int[]{6, 3},
+                    new int[]{6, 4},
+                    new int[]{6, 5},
+                    new int[]{6, 6},
+                    new int[]{6, 7},
+                    new int[]{5, 7},
+                    new int[]{4, 7},
+                    new int[]{3, 7},
+                    new int[]{2, 7},
+            };
+        }
+        return map3;
     }
 
     private String f(double distanceToWaypoint) {
@@ -120,7 +177,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isCorner(int curWaypointInd) {
-        int[] xy = world.getWaypoints()[curWaypointInd];
+        int[] xy = getWaypoints()[curWaypointInd];
         TileType tileType = world.getTilesXY()[xy[0]][xy[1]];
         return tileType == TileType.LEFT_BOTTOM_CORNER || tileType == TileType.RIGHT_BOTTOM_CORNER || tileType == TileType.LEFT_TOP_CORNER || tileType == TileType.RIGHT_TOP_CORNER;
     }
@@ -149,11 +206,11 @@ public final class MyStrategy implements Strategy {
         tilesPoints = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
             int wayPointIndex = curWaypointInd + i;
-            if (wayPointIndex >= world.getWaypoints().length) {
-                wayPointIndex = wayPointIndex - world.getWaypoints().length;
+            if (wayPointIndex >= getWaypoints().length) {
+                wayPointIndex = wayPointIndex - getWaypoints().length;
             }
-            int waypointX = world.getWaypoints()[(wayPointIndex)][X];
-            int waypointY = world.getWaypoints()[(wayPointIndex)][Y];
+            int waypointX = getWaypoints()[(wayPointIndex)][X];
+            int waypointY = getWaypoints()[(wayPointIndex)][Y];
 
             tilesPoints.add(getPointsFromWayPoint(waypointX, waypointY));
         }
@@ -241,7 +298,11 @@ public final class MyStrategy implements Strategy {
     }
 
     private TileType getTileType() {
-        return world.getTilesXY()[self.getNextWaypointX()][self.getNextWaypointY()];
+        return world.getTilesXY()[getNextWaypointX()][getNextWaypointY()];
+    }
+
+    private int getNextWaypointY() {
+        return self.getNextWaypointY();
     }
 
 
@@ -286,7 +347,11 @@ public final class MyStrategy implements Strategy {
     }
 
     private int dSize(double v, int padding) {
-        return (int) (v / 12d) + padding;
+        return (int) (v / debugKoef) + padding;
+    }
+
+    private int toTileIndex(double v) {
+        return (int) (((v - sidePadding) * debugKoef) / game.getTrackTileSize());
     }
 
     private int dSize(double x) {
@@ -299,6 +364,38 @@ public final class MyStrategy implements Strategy {
         private int rectSize;
         private int margin;
         private int size;
+
+        public MyPanel() {
+            super();
+            addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int x = toTileIndex(e.getX());
+                    int y = toTileIndex(e.getY());
+                    log("new int[]{" + x + "," + y + "},");
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+
+                }
+            });
+        }
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -427,7 +524,7 @@ public final class MyStrategy implements Strategy {
         }
 
         public FPoint(int curWaypointInd) {
-            this(world.getWaypoints()[curWaypointInd][0] * game.getTrackTileSize(), world.getWaypoints()[curWaypointInd][1] * game.getTrackTileSize());
+            this(getWaypoints()[curWaypointInd][0] * game.getTrackTileSize(), getWaypoints()[curWaypointInd][1] * game.getTrackTileSize());
         }
 
         @Override

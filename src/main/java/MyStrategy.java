@@ -934,12 +934,16 @@ public final class MyStrategy implements Strategy {
                             g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
                             break;
                         case LEFT_HEADED_T:
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, rectSize);
                             break;
                         case RIGHT_HEADED_T:
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, rectSize);
                             break;
                         case TOP_HEADED_T:
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
                             break;
                         case BOTTOM_HEADED_T:
+                            g2.fillRect(dSizeW(x), dSizeW(y), rectSize, margin);
                             break;
                         case CROSSROADS:
                             g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);

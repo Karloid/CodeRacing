@@ -3,11 +3,16 @@ import model.*;
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.geom.Arc2D;
+import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.*;
 
 public final class MyStrategy implements Strategy {
     private static final boolean DEBUG = true;
+    public static final int X = 0;
+    public static final int Y = 1;
 
     private Car self;
     private World world;
@@ -25,7 +30,9 @@ public final class MyStrategy implements Strategy {
     private MyPanel panel;
     private Graphics2D dG;
     private int sidePadding = 46;
-    private double offset;
+    private double pointTileOffset;
+    private int curWaypointInd;
+    private List<FPoint[]> tilesPoints;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -35,10 +42,30 @@ public final class MyStrategy implements Strategy {
         this.game = game;
         this.move = move;
 
+        findCurrentWaypoint();
+
         doMove();
 
         log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
         drawWindow();
+    }
+
+    private void findCurrentWaypoint() {
+        boolean find = false;
+        for (; curWaypointInd < world.getWaypoints().length; curWaypointInd++) {
+            int[] xy = world.getWaypoints()[curWaypointInd];
+            if (xy[0] == self.getNextWaypointX() && xy[1] == self.getNextWaypointY()) {
+                find = true;
+                break;
+            }
+        }
+        if (!find) {
+            curWaypointInd = 0;
+            int[] xy = world.getWaypoints()[curWaypointInd];
+            if (xy[0] != self.getNextWaypointX() || xy[1] != self.getNextWaypointY()) {
+                log("SUPER ERROR: Incorrect waypoint index");
+            }
+        }
     }
 
     private String f(double distanceToWaypoint) {
@@ -53,7 +80,7 @@ public final class MyStrategy implements Strategy {
     private void doMove() {
         doWheelTurn();
 
-        if (speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI) {
+        if (isBrakeNeed()) {
             move.setBrake(true);
         } else if (isTimeForNitro()) {
             move.setUseNitro(true);
@@ -72,84 +99,133 @@ public final class MyStrategy implements Strategy {
         }
     }
 
+    private boolean isBrakeNeed() {
+        boolean angleStuff = false/*speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI*/;
+        boolean tooFast = speedModule > 32 && curWaypointInd != 0;
+        boolean tooFastCorner = speedModule > 16 && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(curWaypointInd)) < game.getTrackTileSize() * 2;
+        if (tooFastCorner) log("TOO fast for corner!");
+        return angleStuff || tooFast || tooFastCorner;
+    }
+
+    private boolean isCorner(int curWaypointInd) {
+        int[] xy = world.getWaypoints()[curWaypointInd];
+        TileType tileType = world.getTilesXY()[xy[0]][xy[1]];
+        return tileType == TileType.LEFT_BOTTOM_CORNER || tileType == TileType.RIGHT_BOTTOM_CORNER || tileType == TileType.LEFT_TOP_CORNER || tileType == TileType.RIGHT_TOP_CORNER;
+    }
+
     private boolean isTimeForNitro() {
-        return abs(angleToWaypoint) < 0.1f && distanceToWaypoint > 1000 && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+        return abs(angleToWaypoint) < 0.1f && distanceToWaypoint > 1000 && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0 && !isCorner(curWaypointInd);
     }
 
     private void doWheelTurn() {
-        nextX = (self.getNextWaypointX() + 0.5) * game.getTrackTileSize();
-        nextY = (self.getNextWaypointY() + 0.5) * game.getTrackTileSize();
+
+        findNextXY();
 
         distanceToWaypoint = self.getDistanceTo(nextX, nextY);
-
-        double cornerTileOffset = 0.25D * game.getTrackTileSize();
-
-        switch (getTileType()) {
-            case EMPTY:
-                break;
-            case CROSSROADS:
-            case VERTICAL:
-            case HORIZONTAL:
-                offset = game.getTrackTileMargin() + game.getCarHeight();
-                int topX = (int) (self.getNextWaypointX() * game.getTrackTileSize());
-                int topY = (int) (self.getNextWaypointY() * game.getTrackTileSize());
-
-                int botX = (int) (topX + game.getTrackTileSize() - offset);
-                int botY = (int) (topY + game.getTrackTileSize() - offset);
-
-
-                topX += offset;
-                topY += offset;
-                int mediumX = topX + (botX - topX) / 2;
-                int mediumY = topY + (botY - topY) / 2;
-                FPoint[] points = new FPoint[]{
-                        new FPoint(topX, topY), new FPoint(botX, topY),
-                        new FPoint(botX, botY), new FPoint(topX, botY),
-                        new FPoint(mediumX, mediumY),
-                        new FPoint(botX, mediumY), new FPoint(topX, mediumY),
-                        new FPoint(mediumX, botY), new FPoint(mediumX, botY)
-                };
-                FPoint target = null;
-                for (FPoint point : points) {
-                    if (target == null || self.getDistanceTo(point) < self.getDistanceTo(target)) {
-                        target = point;
-                    }
-                }
-                nextX = target.getX();
-                nextY = target.getY();
-
-                break;
-            case LEFT_TOP_CORNER:
-                nextX += cornerTileOffset;
-                nextY += cornerTileOffset;
-                break;
-            case RIGHT_TOP_CORNER:
-                nextX -= cornerTileOffset;
-                nextY += cornerTileOffset;
-                break;
-            case LEFT_BOTTOM_CORNER:
-                nextX += cornerTileOffset;
-                nextY -= cornerTileOffset;
-                break;
-            case RIGHT_BOTTOM_CORNER:
-                nextX -= cornerTileOffset;
-                nextY -= cornerTileOffset;
-                break;
-            case LEFT_HEADED_T:
-                break;
-            case RIGHT_HEADED_T:
-                break;
-            case TOP_HEADED_T:
-                break;
-            case BOTTOM_HEADED_T:
-                break;
-        }
 
         angleToWaypoint = self.getAngleTo(nextX, nextY);
         speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-        move.setWheelTurn(angleToWaypoint * 32d / PI);
-        move.setEnginePower(1);
+        move.setWheelTurn(angleToWaypoint);
+        move.setEnginePower(0.75d);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void findNextXY() {
+        pointTileOffset = game.getTrackTileMargin() + game.getCarHeight();
+
+        tilesPoints = new ArrayList<>();
+        for (int i = 0; i <= 3; i++) {
+            int wayPointIndex = curWaypointInd + i;
+            if (wayPointIndex >= world.getWaypoints().length) {
+                wayPointIndex = wayPointIndex - world.getWaypoints().length;
+            }
+            int waypointX = world.getWaypoints()[(wayPointIndex)][X];
+            int waypointY = world.getWaypoints()[(wayPointIndex)][Y];
+
+            tilesPoints.add(getPointsFromWayPoint(waypointX, waypointY));
+        }
+        FPoint startPoint = new FPoint(self.getX(), self.getY());
+        Map<FPoint, Double> results = new HashMap<>();
+        for (FPoint root : tilesPoints.get(0)) {
+            results.put(root, getMinDistance(root, 1, startPoint.getDistanceTo(root) + 0));
+        }
+
+        Map.Entry<FPoint, Double> result = null;
+        for (Map.Entry<FPoint, Double> entry : results.entrySet()) {
+            if (result == null || entry.getValue() < result.getValue()) {
+                result = entry;
+            }
+        }
+        nextX = result.getKey().getX();
+        nextY = result.getKey().getY();
+    }
+
+    private double getMinDistance(FPoint startPoint, int level, double sum) {
+        if (level >= tilesPoints.size())
+            return sum;
+        List<Double> sums = new ArrayList<>();
+        for (FPoint point : tilesPoints.get(0)) {
+            sums.add(getMinDistance(point, level + 1, startPoint.getDistanceTo(point) + sum));
+        }
+        Double result = null;
+        for (Double distance : sums) {
+            if (result == null || distance < result) {
+                result = distance;
+            }
+        }
+        return result;
+    }
+
+    private FPoint[] getPointsFromWayPoint(int waypointX, int waypointY) {
+
+        double cornerTileOffset = 0.4D * game.getTrackTileSize();
+
+        int topX = (int) (waypointX * game.getTrackTileSize());
+        int topY = (int) (waypointY * game.getTrackTileSize());
+
+        int botX = (int) (topX + game.getTrackTileSize() - pointTileOffset);
+        int botY = (int) (topY + game.getTrackTileSize() - pointTileOffset);
+
+        topX += pointTileOffset;
+        topY += pointTileOffset;
+
+        switch (world.getTilesXY()[waypointX][waypointY]) {
+            case LEFT_TOP_CORNER:
+                topX += cornerTileOffset;
+                topY += cornerTileOffset;
+                /*botX += cornerTileOffset;
+                botY += cornerTileOffset;*/
+                break;
+            case RIGHT_TOP_CORNER:
+                botX -= cornerTileOffset;
+                topY += cornerTileOffset;
+               /* topX -= cornerTileOffset;
+                botY += cornerTileOffset;*/
+                break;
+            case LEFT_BOTTOM_CORNER:
+                //   botX += cornerTileOffset;
+                //   topY -= cornerTileOffset;
+                topX += cornerTileOffset;
+                botY -= cornerTileOffset;
+                break;
+            case RIGHT_BOTTOM_CORNER:
+                //   topX -= cornerTileOffset;
+                // topY -= cornerTileOffset;
+                botX -= cornerTileOffset;
+                botY -= cornerTileOffset;
+                break;
+        }
+
+        int mediumX = topX + (botX - topX) / 2;
+        int mediumY = topY + (botY - topY) / 2;
+        return new FPoint[]{
+                new FPoint(topX, topY), new FPoint(botX, topY),
+                new FPoint(botX, botY), new FPoint(topX, botY),
+                new FPoint(mediumX, mediumY),
+                new FPoint(botX, mediumY), new FPoint(topX, mediumY),
+                new FPoint(mediumX, botY), new FPoint(mediumX, topY)
+        };
     }
 
     private TileType getTileType() {
@@ -210,6 +286,7 @@ public final class MyStrategy implements Strategy {
         private Graphics2D g2;
         private int rectSize;
         private int margin;
+        private int size;
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -220,8 +297,19 @@ public final class MyStrategy implements Strategy {
             g2.fillRect(sidePadding, sidePadding, panel.getWidth() - sidePadding * 2, panel.getHeight() - sidePadding * 2);
 
             drawTiles();
+            drawFPoints();
             drawCars();
             drawMyLines();
+        }
+
+        private void drawFPoints() {
+            g2.setColor(new Color(0xE2FF55));
+            for (FPoint[] points : tilesPoints) {
+                for (FPoint point : points) {
+                    size = 5;
+                    g2.fillRect(dSize(point.getX()) - size / 2, dSize(point.getY()) - size / 2, size, size);
+                }
+            }
         }
 
         private void drawTiles() {
@@ -322,8 +410,17 @@ public final class MyStrategy implements Strategy {
     }
 
     private class FPoint extends Unit {
-        public FPoint(int x, int y) {
+        public FPoint(double x, double y) {
             super(0, 0, x, y, 0, 0, 0, 0);
+        }
+
+        public FPoint(int curWaypointInd) {
+            this(world.getWaypoints()[curWaypointInd][0] * game.getTrackTileSize(), world.getWaypoints()[curWaypointInd][1] * game.getTrackTileSize());
+        }
+
+        @Override
+        public String toString() {
+            return "FPoint{" + getX() + " " + getY() + "}";
         }
     }
 }

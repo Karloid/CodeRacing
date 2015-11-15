@@ -1215,6 +1215,20 @@ public final class MyStrategy implements Strategy {
                     new int[]{3,2},
                     new int[]{3,3}
             ));
+
+            nitroTilesMap.put(MAP_DEFAULT, Arrays.asList(
+                    new int[]{0,6},
+                    new int[]{0,5},
+                    new int[]{0,4},
+                    new int[]{1,0},
+                    new int[]{3,0},
+                    new int[]{7,1},
+                    new int[]{7,2},
+                    new int[]{7,3},
+                    new int[]{6,7},
+                    new int[]{5,7},
+                    new int[]{4,7}
+            ));
         }
         List<int[]> slowTiles = nitroTilesMap.get(world.getMapName());
         if (slowTiles == null) {

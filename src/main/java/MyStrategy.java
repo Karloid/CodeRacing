@@ -87,22 +87,34 @@ public final class MyStrategy implements Strategy {
             log("!!! use nitro!");
         }
 
-        if (distanceToWaypoint < game.getTrackTileSize() && self.getOilCanisterCount() > 0) {
+        if (distanceToWaypoint < game.getTrackTileSize() && isCorner(curWaypointInd) && self.getOilCanisterCount() > 0 && notLast()) {
             move.setSpillOil(true);
             log("use oil!!1");
         }
         for (Car car : world.getCars()) {
-            if (!car.isTeammate() && self.getDistanceTo(car) < game.getTrackTileSize() && self.getAngleTo(car) < 0.1f && self.getProjectileCount() > 0) {
+            if (!car.isTeammate() && self.getDistanceTo(car) < game.getTrackTileSize() * 1.5f && abs(self.getAngleTo(car)) < 0.1f && self.getProjectileCount() > 0) {
                 move.setThrowProjectile(true);
-                log("use projectiles");
+                log("!!!use projectiles");
             }
         }
     }
 
+    private boolean notLast() {
+        for (Player player : world.getPlayers()) {
+            if (player.getScore() < world.getMyPlayer().getScore()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isBrakeNeed() {
         boolean angleStuff = false/*speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI*/;
-        boolean tooFast = speedModule > 32 && curWaypointInd != 0;
-        boolean tooFastCorner = speedModule > 16 && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(curWaypointInd)) < game.getTrackTileSize() * 2;
+        float carefulCof = self.getDurability() < 0.4d ? 0.5f : 1f;
+        float maxSpeed = 32 * carefulCof;
+        boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
+        float maxSpeedOnCorner = 16 * carefulCof;
+        boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(curWaypointInd)) < game.getTrackTileSize() * 1.3f;
         if (tooFastCorner) log("TOO fast for corner!");
         return angleStuff || tooFast || tooFastCorner;
     }

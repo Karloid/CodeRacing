@@ -101,7 +101,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private void findCurrentWaypoint() {
-        if (isMap(MAP_01) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06)) {
+        if (isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06)) {
 
 
             int[] currentWaypoint = getWaypoints()[this.curWaypointInd];
@@ -162,6 +162,7 @@ public final class MyStrategy implements Strategy {
     private int[][] getWaypoints() {
         if (customMapWaypoints == null) {
             customMapWaypoints = new HashMap<>();
+            customMapWaypoints.put(MAP_DEFAULT, getMapDefaultWaypoints());
             customMapWaypoints.put(MAP_01, getMap01Waypoints());
             customMapWaypoints.put(MAP_02, getMap02Waypoints());
             customMapWaypoints.put(MAP_03, getMap03Waypoints());
@@ -172,6 +173,39 @@ public final class MyStrategy implements Strategy {
         if (waypoints != null)
             return waypoints;
         return world.getWaypoints();
+    }
+
+    private int[][] getMapDefaultWaypoints() {
+        return new int[][]{
+                new int[]{0,6},
+                new int[]{0,5},
+                new int[]{0,4},
+                new int[]{0,3},
+                new int[]{0,2},
+                new int[]{0,1},
+                new int[]{0,0},
+                new int[]{1,0},
+                new int[]{2,0},
+                new int[]{3,0},
+                new int[]{4,0},
+                new int[]{5,0},
+                new int[]{6,0},
+                new int[]{7,0},
+                new int[]{7,1},
+                new int[]{7,2},
+                new int[]{7,3},
+                new int[]{7,4},
+                new int[]{7,5},
+                new int[]{7,6},
+                new int[]{7,7},
+                new int[]{6,7},
+                new int[]{5,7},
+                new int[]{4,7},
+                new int[]{3,7},
+                new int[]{2,7},
+                new int[]{1,7},
+                new int[]{0,7},
+        };
     }
 
     private int[][] getMap01Waypoints() {

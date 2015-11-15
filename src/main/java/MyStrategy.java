@@ -121,7 +121,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private int dSize(double v, int padding) {
-        return (int) (v / 12) + padding;
+        return (int) (v / 12d) + padding;
     }
 
     private int dSize(double x) {
@@ -131,17 +131,84 @@ public final class MyStrategy implements Strategy {
     private class MyPanel extends JPanel {
 
         private Graphics2D g2;
+        private int rectSize;
+        private int margin;
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
             g2 = (Graphics2D) g;
-            g2.setColor(Color.WHITE);
+            g2.setColor(Color.darkGray);
             g2.fillRect(sidePadding, sidePadding, panel.getWidth() - sidePadding * 2, panel.getHeight() - sidePadding * 2);
-            drawCars();
 
+            drawTiles();
+            drawCars();
             drawMyLines();
+        }
+
+        private void drawTiles() {
+            g2.setColor(Color.gray);
+            rectSize = dSize(game.getTrackTileSize(), 0);
+            margin = dSize(game.getTrackTileMargin(), 0);
+            for (int x = 0; x < world.getWidth(); x++) {
+                for (int y = 0; y < world.getHeight(); y++) {
+                    g2.setColor(Color.gray);
+                    g2.drawRect(dSizeW(x), dSizeW(y), rectSize, rectSize);
+
+                    g2.setColor(Color.orange);
+                    switch (world.getTilesXY()[x][y]) {
+                        case EMPTY:
+                            break;
+                        case VERTICAL:
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, rectSize);
+                            break;
+                        case HORIZONTAL:
+                            g2.fillRect(dSizeW(x), dSizeW(y), rectSize, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
+                            break;
+                        case LEFT_TOP_CORNER:
+                            g2.fillRect(dSizeW(x), dSizeW(y), rectSize, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
+                            break;
+                        case RIGHT_TOP_CORNER:
+                            g2.fillRect(dSizeW(x), dSizeW(y), rectSize, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            break;
+                        case LEFT_BOTTOM_CORNER:
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
+                            break;
+                        case RIGHT_BOTTOM_CORNER:
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
+                            break;
+                        case LEFT_HEADED_T:
+                            break;
+                        case RIGHT_HEADED_T:
+                            break;
+                        case TOP_HEADED_T:
+                            break;
+                        case BOTTOM_HEADED_T:
+                            break;
+                        case CROSSROADS:
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
+                            break;
+                    }
+                }
+            }
+        }
+
+        private int dSizeW(int v) {
+            return dSize(v * game.getTrackTileSize());
         }
 
         private void drawMyLines() {
@@ -157,8 +224,8 @@ public final class MyStrategy implements Strategy {
                 Graphics2D gg = (Graphics2D) g2.create();
 
                 gg.setColor(car.getPlayerId() == world.getMyPlayer().getId() ? Color.green : Color.red);
-                int x = (int) (dSize(car.getX()) + width / 2d);
-                int y = (int) (dSize(car.getY()) + height / 2d);
+                int x = (int) (dSize(car.getX()));
+                int y = (int) (dSize(car.getY()));
 
                 Rectangle r = new Rectangle(
                         (int) (0 - width / 2d), (int) (0 - height / 2d),

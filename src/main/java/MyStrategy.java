@@ -702,6 +702,11 @@ public final class MyStrategy implements Strategy {
             for (int[] xy : getWaypoints()) {
                 g2.fillRect(dSizeW(xy[X]) + margin * 2, dSizeW(xy[Y]) + margin * 2, rectSize - margin * 4, rectSize - margin * 4);
             }
+
+            g2.setColor(new Color(0xC78FB3));
+            for (int[] xy : getSlowTiles()) {
+                g2.fillRect(dSizeW(xy[X]) + margin * 3, dSizeW(xy[Y]) + margin * 3, rectSize - margin * 6, rectSize - margin * 6);
+            }
         }
 
         private void drawFPoints() {
@@ -805,8 +810,6 @@ public final class MyStrategy implements Strategy {
 
             }
         }
-
-
     }
 
     private class FPoint extends Unit {

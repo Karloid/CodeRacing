@@ -219,7 +219,7 @@ public final class MyStrategy implements Strategy {
         angleToWaypoint = self.getAngleTo(nextX, nextY);
         speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-  /*      if (abs(angleToWaypoint) > 2f && getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE + GAP ) {
+        if (abs(angleToWaypoint) > 2f && getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE + GAP) {
             if (angleToWaypoint > 0) {
                 angleToWaypoint = angleToWaypoint - PI;
             } else {
@@ -228,7 +228,7 @@ public final class MyStrategy implements Strategy {
             reverseMove = true;
         } else {
             reverseMove = false;
-        }*/
+        }
 
 
         log("angleToWaypoint: " + angleToWaypoint);
@@ -318,24 +318,16 @@ public final class MyStrategy implements Strategy {
             case LEFT_TOP_CORNER:
                 topX += cornerTileOffset;
                 topY += cornerTileOffset;
-                /*botX += cornerTileOffset;
-                botY += cornerTileOffset;*/
                 break;
             case RIGHT_TOP_CORNER:
                 botX -= cornerTileOffset;
                 topY += cornerTileOffset;
-               /* topX -= cornerTileOffset;
-                botY += cornerTileOffset;*/
                 break;
             case LEFT_BOTTOM_CORNER:
-                //   botX += cornerTileOffset;
-                //   topY -= cornerTileOffset;
                 topX += cornerTileOffset;
                 botY -= cornerTileOffset;
                 break;
             case RIGHT_BOTTOM_CORNER:
-                //   topX -= cornerTileOffset;
-                // topY -= cornerTileOffset;
                 botX -= cornerTileOffset;
                 botY -= cornerTileOffset;
                 break;
@@ -616,10 +608,25 @@ public final class MyStrategy implements Strategy {
             g2.setColor(Color.darkGray);
             g2.fillRect(sidePadding, sidePadding, panel.getWidth() - sidePadding * 2, panel.getHeight() - sidePadding * 2);
 
+            rectSize = dSize(game.getTrackTileSize(), 0);
+            margin = dSize(game.getTrackTileMargin(), 0);
+
+            drawWaypoints();
             drawTiles();
             drawFPoints();
             drawCars();
             drawMyLines();
+        }
+
+        private void drawWaypoints() {
+            g2.setColor(new Color(0x937026));
+            for (int[] xy : world.getWaypoints()) {
+                g2.fillRect(dSizeW(xy[X]), dSizeW(xy[Y]), rectSize, rectSize);
+            }
+            g2.setColor(new Color(0xC7A66E));
+            for (int[] xy : getWaypoints()) {
+                g2.fillRect(dSizeW(xy[X]) + margin * 2, dSizeW(xy[Y]) + margin * 2, rectSize - margin * 4, rectSize - margin * 4);
+            }
         }
 
         private void drawFPoints() {
@@ -634,8 +641,6 @@ public final class MyStrategy implements Strategy {
 
         private void drawTiles() {
             g2.setColor(Color.gray);
-            rectSize = dSize(game.getTrackTileSize(), 0);
-            margin = dSize(game.getTrackTileMargin(), 0);
             for (int x = 0; x < world.getWidth(); x++) {
                 for (int y = 0; y < world.getHeight(); y++) {
                     g2.setColor(Color.gray);

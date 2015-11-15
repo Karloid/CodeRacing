@@ -25,6 +25,7 @@ public final class MyStrategy implements Strategy {
     private MyPanel panel;
     private Graphics2D dG;
     private int sidePadding = 46;
+    private double offset;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -58,6 +59,17 @@ public final class MyStrategy implements Strategy {
             move.setUseNitro(true);
             log("!!! use nitro!");
         }
+
+        if (distanceToWaypoint < game.getTrackTileSize() && self.getOilCanisterCount() > 0) {
+            move.setSpillOil(true);
+            log("use oil!!1");
+        }
+        for (Car car : world.getCars()) {
+            if (!car.isTeammate() && self.getDistanceTo(car) < game.getTrackTileSize() && self.getAngleTo(car) < 0.1f && self.getProjectileCount() > 0) {
+                move.setThrowProjectile(true);
+                log("use projectiles");
+            }
+        }
     }
 
     private boolean isTimeForNitro() {
@@ -73,6 +85,40 @@ public final class MyStrategy implements Strategy {
         double cornerTileOffset = 0.25D * game.getTrackTileSize();
 
         switch (getTileType()) {
+            case EMPTY:
+                break;
+            case CROSSROADS:
+            case VERTICAL:
+            case HORIZONTAL:
+                offset = game.getTrackTileMargin() + game.getCarHeight();
+                int topX = (int) (self.getNextWaypointX() * game.getTrackTileSize());
+                int topY = (int) (self.getNextWaypointY() * game.getTrackTileSize());
+
+                int botX = (int) (topX + game.getTrackTileSize() - offset);
+                int botY = (int) (topY + game.getTrackTileSize() - offset);
+
+
+                topX += offset;
+                topY += offset;
+                int mediumX = topX + (botX - topX) / 2;
+                int mediumY = topY + (botY - topY) / 2;
+                FPoint[] points = new FPoint[]{
+                        new FPoint(topX, topY), new FPoint(botX, topY),
+                        new FPoint(botX, botY), new FPoint(topX, botY),
+                        new FPoint(mediumX, mediumY),
+                        new FPoint(botX, mediumY), new FPoint(topX, mediumY),
+                        new FPoint(mediumX, botY), new FPoint(mediumX, botY)
+                };
+                FPoint target = null;
+                for (FPoint point : points) {
+                    if (target == null || self.getDistanceTo(point) < self.getDistanceTo(target)) {
+                        target = point;
+                    }
+                }
+                nextX = target.getX();
+                nextY = target.getY();
+
+                break;
             case LEFT_TOP_CORNER:
                 nextX += cornerTileOffset;
                 nextY += cornerTileOffset;
@@ -89,7 +135,14 @@ public final class MyStrategy implements Strategy {
                 nextX -= cornerTileOffset;
                 nextY -= cornerTileOffset;
                 break;
-            default:
+            case LEFT_HEADED_T:
+                break;
+            case RIGHT_HEADED_T:
+                break;
+            case TOP_HEADED_T:
+                break;
+            case BOTTOM_HEADED_T:
+                break;
         }
 
         angleToWaypoint = self.getAngleTo(nextX, nextY);
@@ -102,6 +155,30 @@ public final class MyStrategy implements Strategy {
     private TileType getTileType() {
         return world.getTilesXY()[self.getNextWaypointX()][self.getNextWaypointY()];
     }
+
+
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+    //===========================================================================================
+
 
     @SuppressWarnings("MagicConstant")
     private void drawWindow() {
@@ -238,13 +315,15 @@ public final class MyStrategy implements Strategy {
 
                 gg.dispose();
 
-                /*
-                g2.rotate(0);
-                g2.draw(rect2);
-                g2.fill(rect2);*/
             }
         }
 
 
+    }
+
+    private class FPoint extends Unit {
+        public FPoint(int x, int y) {
+            super(0, 0, x, y, 0, 0, 0, 0);
+        }
     }
 }

@@ -54,6 +54,7 @@ public final class MyStrategy implements Strategy {
     private int lastWaypointInd;
     private HashMap<String, List<int[]>> slowTilesMap;
     private Map<String, int[][]> customMapWaypoints;
+    private int[] tmpWaypointTile;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -172,11 +173,85 @@ public final class MyStrategy implements Strategy {
             customMapWaypoints.put(MAP_03, getMap03Waypoints());
             customMapWaypoints.put(MAP_04, getMap04Waypoints());
             customMapWaypoints.put(MAP_05, getMap05Waypoints());
+            customMapWaypoints.put(MAP_06, getMap06Waypoints());
         }
         int[][] waypoints = customMapWaypoints.get(world.getMapName());
         if (waypoints != null)
             return waypoints;
         return world.getWaypoints();
+    }
+
+    private int[][] getMap06Waypoints() {
+        return new int[][]{
+                new int[]{13, 15},
+                new int[]{12, 15},
+                new int[]{11, 15},
+                new int[]{10, 15},
+                new int[]{9, 15},
+                new int[]{8, 15},
+                new int[]{7, 15},
+                new int[]{6, 15},
+                new int[]{5, 15},
+                new int[]{4, 15},
+                new int[]{3, 15},
+                new int[]{2, 15},
+                new int[]{1, 15},
+                new int[]{0, 15},
+                new int[]{0, 14},
+                new int[]{0, 13},
+                new int[]{0, 12},
+                new int[]{0, 11},
+                new int[]{0, 10},
+                new int[]{0, 9},
+                new int[]{0, 8},
+                new int[]{0, 7},
+                new int[]{0, 6},
+                new int[]{0, 5},
+                new int[]{0, 4},
+                new int[]{0, 3},
+                new int[]{0, 2},
+                new int[]{0, 1},
+                new int[]{0, 0},
+                new int[]{1, 0},
+                new int[]{2, 0},
+                new int[]{2, 1},
+                new int[]{3, 1},
+                new int[]{3, 2},
+                new int[]{3, 3},
+                new int[]{3, 4},
+                new int[]{3, 5},
+                new int[]{3, 6},
+                new int[]{3, 7},
+                new int[]{3, 8},
+                new int[]{3, 9},
+                new int[]{3, 10},
+                new int[]{3, 11},
+                new int[]{3, 12},
+                new int[]{3, 13},
+                new int[]{2, 13},
+                new int[]{2, 14},
+                new int[]{3, 14},
+                new int[]{4, 14},
+                new int[]{5, 14},
+                new int[]{6, 14},
+                new int[]{6, 13},
+                new int[]{7, 13},
+                new int[]{7, 12},
+                new int[]{8, 12},
+                new int[]{9, 12},
+                new int[]{9, 13},
+                new int[]{10, 13},
+                new int[]{11, 13},
+                new int[]{12, 13},
+                new int[]{13, 13},
+                new int[]{13, 12},
+                new int[]{14, 12},
+                new int[]{15, 12},
+                new int[]{15, 13},
+                new int[]{15, 14},
+                new int[]{14, 14},
+                new int[]{14, 15},
+        };
     }
 
     private int[][] getMapDefaultWaypoints() {
@@ -531,9 +606,17 @@ public final class MyStrategy implements Strategy {
         topY += pointTileOffset;
 
         TileType tileType = world.getTilesXY()[waypointX][waypointY];
-        if (isMap(MAP_03) && tilesIsEqual(new int[]{3, 0}, new int[]{waypointX, waypointY})) {
+
+        tmpWaypointTile = new int[]{waypointX, waypointY};
+
+        if (isMap(MAP_03) && tilesIsEqual(new int[]{3, 0}, tmpWaypointTile)) {
             tileType = TileType.LEFT_TOP_CORNER;
+        } else if (isMap(MAP_06)) {
+            tileType = getHackyTileType(tileType, new int[]{2,13}, TileType.LEFT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{7,13}, TileType.RIGHT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{9, 13}, TileType.LEFT_BOTTOM_CORNER);
         }
+
         double cornerTileSideOffset = cornerTileOffset / 6;
         switch (tileType) {
             case LEFT_TOP_CORNER:
@@ -571,6 +654,13 @@ public final class MyStrategy implements Strategy {
                 new FPoint(botX, mediumY), new FPoint(topX, mediumY),
                 new FPoint(mediumX, botY), new FPoint(mediumX, topY)
         };
+    }
+
+    private TileType getHackyTileType(TileType origin, int[] checkOn, TileType type) {
+        if (tilesIsEqual(checkOn, tmpWaypointTile)) {
+            origin = type;
+        }
+        return origin;
     }
 
     private TileType getTileType() {
@@ -963,6 +1053,9 @@ public final class MyStrategy implements Strategy {
         private void drawMyLines() {
             g2.setColor(Color.green);
             g2.drawLine(dSize(self.getX()), dSize(self.getY()), dSize(nextX), dSize(nextY));
+
+            g2.setColor(new Color(0xFF00D7));
+            g2.drawLine(dSize(self.getX()), dSize(self.getY()), dSize(self.getX() + self.getSpeedX() * 15), dSize(self.getY() + self.getSpeedY() * 15));
         }
 
         private void drawCars() {

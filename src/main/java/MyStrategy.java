@@ -114,7 +114,7 @@ public final class MyStrategy implements Strategy {
         float maxSpeed = 32 * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
         float maxSpeedOnCorner = 16 * carefulCof;
-        boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(curWaypointInd)) < game.getTrackTileSize() * 1.3f;
+        boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(nextX, nextY)) < game.getTrackTileSize() * 0.8f;
         if (tooFastCorner) log("TOO fast for corner!");
         return angleStuff || tooFast || tooFastCorner;
     }

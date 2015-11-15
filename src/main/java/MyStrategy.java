@@ -18,7 +18,8 @@ public final class MyStrategy implements Strategy {
     public static final double debugKoef = 16d;
     public static final String MAP_03 = "map03";
     private static final String MAP_04 = "map04";
-    public static final int TICKS_COUNT_FOR_DISTANCE = 60;
+    public static final int TICKS_COUNT_FOR_DISTANCE = 80;
+    public static final int GAP = 40;
 
     private Car self;
     private World world;
@@ -206,7 +207,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isTimeForNitro() {
-        return abs(angleToWaypoint) < 0.1f && distanceToWaypoint > 1000 && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0 && !isCorner(curWaypointInd);
+        return abs(angleToWaypoint) < 0.1f && (distanceToWaypoint > game.getTrackTileSize() * 3 || curWaypointInd == 0) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
     private void doWheelTurn() {
@@ -218,7 +219,7 @@ public final class MyStrategy implements Strategy {
         angleToWaypoint = self.getAngleTo(nextX, nextY);
         speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-        if (abs(angleToWaypoint) > 1.6f) {
+  /*      if (abs(angleToWaypoint) > 2f && getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE + GAP ) {
             if (angleToWaypoint > 0) {
                 angleToWaypoint = angleToWaypoint - PI;
             } else {
@@ -227,7 +228,7 @@ public final class MyStrategy implements Strategy {
             reverseMove = true;
         } else {
             reverseMove = false;
-        }
+        }*/
 
 
         log("angleToWaypoint: " + angleToWaypoint);
@@ -237,10 +238,10 @@ public final class MyStrategy implements Strategy {
 
         if (getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE) {
             setWheelTurn(angleToWaypoint * -1 * reverseMoveFactor);
-            move.setEnginePower(-1);
+            move.setEnginePower(backwardSpeed);
         } else {
             if (getMoveBackWardDelta() <=
-                    TICKS_COUNT_FOR_DISTANCE + 20 && getMoveBackWardDelta() >= TICKS_COUNT_FOR_DISTANCE) {
+                    TICKS_COUNT_FOR_DISTANCE + GAP && getMoveBackWardDelta() >= TICKS_COUNT_FOR_DISTANCE) {
                 setWheelTurn(angleToWaypoint * -1 * reverseMoveFactor);
             } else {
                 setWheelTurn(angleToWaypoint * reverseMoveFactor);
@@ -250,7 +251,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private void setWheelTurn(double v) {
-        move.setWheelTurn(v);
+        move.setWheelTurn(v * 32.0D / PI);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -488,6 +489,7 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 4},
                     new int[]{2, 3},
+                    new int[]{2, 2},
                     new int[]{1, 2},
                     new int[]{0, 2},
                     new int[]{0, 0},

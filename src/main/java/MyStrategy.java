@@ -47,6 +47,7 @@ public final class MyStrategy implements Strategy {
 
     private int[] lastWaypoint;
     private int lastWaypointInd;
+    private HashMap<String, List<int[]>> slowTilesMap;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -61,7 +62,8 @@ public final class MyStrategy implements Strategy {
         doMove();
 
         doStatistics();
-        //log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
+        log("speed + " + f(speedModule) + " brake: " + move.isBrake());
+
         drawWindow();
     }
 
@@ -219,13 +221,51 @@ public final class MyStrategy implements Strategy {
 
     private boolean isBrakeNeed() {
         boolean angleStuff = false/*speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI*/;
-        float carefulCof = self.getDurability() < 0.25d ? 0.5f : 1f;
-        float maxSpeed = 32 * carefulCof;
+        float carefulCof = self.getDurability() < 0.25d ? 0.8f : 1f;
+        float maxSpeed = 28 * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
-        float maxSpeedOnCorner = 16 * carefulCof;
+        float maxSpeedOnCorner = 14 * carefulCof;
         boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(nextX, nextY)) < game.getTrackTileSize() * 0.8f;
         if (tooFastCorner) log("TOO fast for corner!");
-        return angleStuff || tooFast || tooFastCorner;
+
+        boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
+        if (slowTile) log("is slowTile!");
+
+        return angleStuff || tooFast || tooFastCorner || slowTile;
+    }
+
+    private boolean isSlowTile() {
+        int[] curTile = getCurTile();
+        for (int[] slowTile : getSlowTiles()) {
+            if (slowTile[X] == curTile[X] && slowTile[Y] == curTile[Y]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int[] getCurTile() {
+        return new int[]{getCurTileX(), getCurTileY()};
+    }
+
+    private List<int[]> getSlowTiles() {
+        if (slowTilesMap == null) {
+            slowTilesMap = new HashMap<>();
+            slowTilesMap.put("map03", Arrays.asList(
+                    new int[]{3, 1},
+                    new int[]{3, 0},
+                    new int[]{4, 0},
+                    new int[]{4, 1},
+                    new int[]{5, 1},
+                    new int[]{5, 2},
+                    new int[]{6, 2}
+            ));
+        }
+        List<int[]> slowTiles = slowTilesMap.get(world.getMapName());
+        if (slowTiles == null) {
+            slowTiles = new ArrayList<>();
+        }
+        return slowTiles;
     }
 
     private boolean isCorner(int curWaypointInd) {
@@ -259,14 +299,14 @@ public final class MyStrategy implements Strategy {
         }*/
 
 
-        log("angleToWaypoint: " + angleToWaypoint);
+        // log("angleToWaypoint: " + angleToWaypoint);
         int reverseMoveFactor = reverseMove ? -1 : 1;
-        int backwardSpeed = -1 * reverseMoveFactor;
-        double normalSpeed = (speedModule < 15 ? 1d : 0.75d) * reverseMoveFactor * getMap03HackSpeedFactor();
+        int backwardPower = -1 * reverseMoveFactor;
+        double normalPower = (speedModule < 15 ? 1d : 0.75d) * reverseMoveFactor * getMap03HackSpeedFactor();
 
         if (getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE) {
             setWheelTurn(angleToWaypoint * -1 * reverseMoveFactor);
-            move.setEnginePower(backwardSpeed);
+            move.setEnginePower(backwardPower);
         } else {
             if (getMoveBackWardDelta() <=
                     TICKS_COUNT_FOR_DISTANCE + GAP && getMoveBackWardDelta() >= TICKS_COUNT_FOR_DISTANCE) {
@@ -274,12 +314,12 @@ public final class MyStrategy implements Strategy {
             } else {
                 setWheelTurn(angleToWaypoint * reverseMoveFactor);
             }
-            move.setEnginePower(normalSpeed);
+            move.setEnginePower(normalPower);
         }
     }
 
     private double getMap03HackSpeedFactor() {
-        if (!isMap03()) return 1d;
+        if (!isMap03() || world.getMyPlayer().getId() == 4) return 1d;
         if (world.getTick() < 380)
             return 0.3;
         return 1;

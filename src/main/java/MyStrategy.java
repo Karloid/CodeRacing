@@ -162,15 +162,49 @@ public final class MyStrategy implements Strategy {
     private int[][] getWaypoints() {
         if (customMapWaypoints == null) {
             customMapWaypoints = new HashMap<>();
+            customMapWaypoints.put(MAP_01, getMap01Waypoints());
+            customMapWaypoints.put(MAP_02, getMap02Waypoints());
             customMapWaypoints.put(MAP_03, getMap03Waypoints());
             customMapWaypoints.put(MAP_04, getMap04Waypoints());
             customMapWaypoints.put(MAP_05, getMap05Waypoints());
-            customMapWaypoints.put(MAP_02, getMap02Waypoints());
         }
         int[][] waypoints = customMapWaypoints.get(world.getMapName());
         if (waypoints != null)
             return waypoints;
         return world.getWaypoints();
+    }
+
+    private int[][] getMap01Waypoints() {
+        return new int[][]{
+                new int[]{0,6},
+                new int[]{0,5},
+                new int[]{0,4},
+                new int[]{1,4},
+                new int[]{2,4},
+                new int[]{3,4},
+                new int[]{4,4},
+                new int[]{5,4},
+                new int[]{6,4},
+                new int[]{7,4},
+                new int[]{7,3},
+                new int[]{7,2},
+                new int[]{7,1},
+                new int[]{7,0},
+                new int[]{6,0},
+                new int[]{5,0},
+                new int[]{4,0},
+                new int[]{3,0},
+                new int[]{3,1},
+                new int[]{3,2},
+                new int[]{3,3},
+                new int[]{3,4},
+                new int[]{3,5},
+                new int[]{3,6},
+                new int[]{3,7},
+                new int[]{2,7},
+                new int[]{1,7},
+                new int[]{0,7},
+        };
     }
 
     private int[][] getMap02Waypoints() {

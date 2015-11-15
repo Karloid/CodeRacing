@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
 
@@ -17,6 +18,7 @@ public final class MyStrategy implements Strategy {
     public static final double debugKoef = 16d;
     public static final String MAP_03 = "map03";
     private static final String MAP_04 = "map04";
+    public static final int TICKS_COUNT_FOR_DISTANCE = 60;
 
     private Car self;
     private World world;
@@ -38,6 +40,8 @@ public final class MyStrategy implements Strategy {
     private int curWaypointInd;
     private List<FPoint[]> tilesPoints;
     private int[][] customWaypoints;
+    private LinkedHashMap<Integer, Double> distanceQueue;
+    private int moveBackwardPoint = -TICKS_COUNT_FOR_DISTANCE;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -51,8 +55,36 @@ public final class MyStrategy implements Strategy {
 
         doMove();
 
+        doStatistics();
         //log("distance " + f(distanceToWaypoint) + "; angle: " + f(angleToWaypoint) + "; speed " + f(speedModule));
         drawWindow();
+    }
+
+    private void doStatistics() {
+        if (distanceQueue == null) {
+            distanceQueue = new LinkedHashMap<Integer, Double>() {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Integer, Double> eldest) {
+                    return this.size() > TICKS_COUNT_FOR_DISTANCE;
+                }
+            };
+        }
+
+        distanceQueue.put(world.getTick(), speedModule);
+
+        Double sum = distanceQueue.values().stream().collect(Collectors.summingDouble(value -> value));
+        log("distance: " + sum);
+
+        if (world.getTick() > TICKS_COUNT_FOR_DISTANCE + game.getInitialFreezeDurationTicks()) {
+            if (sum < 80 && getMoveBackWardDelta() > TICKS_COUNT_FOR_DISTANCE * 3) {
+                log("Need to move back!!!");
+                moveBackwardPoint = world.getTick();
+            }
+        }
+    }
+
+    private int getMoveBackWardDelta() {
+        return world.getTick() - moveBackwardPoint;
     }
 
     private void findCurrentWaypoint() {
@@ -166,65 +198,65 @@ public final class MyStrategy implements Strategy {
     private int[][] getMap05Waypoints() {
         if (customWaypoints == null) {
             customWaypoints = new int[][]{
-                    new int[]{5,12},
-                    new int[]{4,12},
-                    new int[]{3,12},
-                    new int[]{2,12},
-                    new int[]{0,14},
-                    new int[]{1,14},
-                    new int[]{2,14},
-                    new int[]{8,14},
-                    new int[]{8,13},
-                    new int[]{8,12},
-                    new int[]{8,11},
-                    new int[]{8,10},
-                    new int[]{8,9},
-                    new int[]{8,8},
-                    new int[]{6,8},
-                    new int[]{6,7},
-                    new int[]{6,6},
-                    new int[]{7,6},
-                    new int[]{8,6},
-                    new int[]{8,5},
-                    new int[]{8,4},
-                    new int[]{8,3},
-                    new int[]{8,2},
-                    new int[]{8,1},
-                    new int[]{8,0},
-                    new int[]{7,0},
-                    new int[]{6,0},
-                    new int[]{5,0},
-                    new int[]{1,0},
-                    new int[]{0,0},
-                    new int[]{0,1},
-                    new int[]{0,2},
-                    new int[]{0,3},
-                    new int[]{0,8},
-                    new int[]{0,9},
-                    new int[]{0,10},
-                    new int[]{1,10},
-                    new int[]{2,9},
-                    new int[]{2,8},
-                    new int[]{2,5},
-                    new int[]{2,4},
-                    new int[]{2,3},
-                    new int[]{2,2},
-                    new int[]{3,2},
-                    new int[]{5,2},
-                    new int[]{6,3},
-                    new int[]{6,4},
-                    new int[]{5,4},
-                    new int[]{4,4},
-                    new int[]{4,5},
-                    new int[]{4,6},
-                    new int[]{4,7},
-                    new int[]{4,9},
-                    new int[]{4,9},
-                    new int[]{4,10},
-                    new int[]{5,10},
-                    new int[]{6,10},
-                    new int[]{6,11},
-                    new int[]{6,12},
+                    new int[]{5, 12},
+                    new int[]{4, 12},
+                    new int[]{3, 12},
+                    new int[]{2, 12},
+                    new int[]{0, 14},
+                    new int[]{1, 14},
+                    new int[]{2, 14},
+                    new int[]{8, 14},
+                    new int[]{8, 13},
+                    new int[]{8, 12},
+                    new int[]{8, 11},
+                    new int[]{8, 10},
+                    new int[]{8, 9},
+                    new int[]{8, 8},
+                    new int[]{6, 8},
+                    new int[]{6, 7},
+                    new int[]{6, 6},
+                    new int[]{7, 6},
+                    new int[]{8, 6},
+                    new int[]{8, 5},
+                    new int[]{8, 4},
+                    new int[]{8, 3},
+                    new int[]{8, 2},
+                    new int[]{8, 1},
+                    new int[]{8, 0},
+                    new int[]{7, 0},
+                    new int[]{6, 0},
+                    new int[]{5, 0},
+                    new int[]{1, 0},
+                    new int[]{0, 0},
+                    new int[]{0, 1},
+                    new int[]{0, 2},
+                    new int[]{0, 3},
+                    new int[]{0, 8},
+                    new int[]{0, 9},
+                    new int[]{0, 10},
+                    new int[]{1, 10},
+                    new int[]{2, 9},
+                    new int[]{2, 8},
+                    new int[]{2, 5},
+                    new int[]{2, 4},
+                    new int[]{2, 3},
+                    new int[]{2, 2},
+                    new int[]{3, 2},
+                    new int[]{5, 2},
+                    new int[]{6, 3},
+                    new int[]{6, 4},
+                    new int[]{5, 4},
+                    new int[]{4, 4},
+                    new int[]{4, 5},
+                    new int[]{4, 6},
+                    new int[]{4, 7},
+                    new int[]{4, 9},
+                    new int[]{4, 9},
+                    new int[]{4, 10},
+                    new int[]{5, 10},
+                    new int[]{6, 10},
+                    new int[]{6, 11},
+                    new int[]{6, 12},
             };
         }
         return customWaypoints;
@@ -269,8 +301,8 @@ public final class MyStrategy implements Strategy {
         return customWaypoints;
     }
 
-    private String f(double distanceToWaypoint) {
-        return String.format("%.2f", distanceToWaypoint);
+    private String f(double v) {
+        return String.format("%.2f", v);
     }
 
     private void log(String string) {
@@ -293,7 +325,7 @@ public final class MyStrategy implements Strategy {
             log("use oil!!1");
         }
         for (Car car : world.getCars()) {
-            if (!car.isTeammate() && self.getDistanceTo(car) < game.getTrackTileSize() * 1.5f && abs(self.getAngleTo(car)) < 0.1f && self.getProjectileCount() > 0) {
+            if (!car.isTeammate() && car.getDurability() > 0d && self.getDistanceTo(car) < game.getTrackTileSize() * 1.5f && abs(self.getAngleTo(car)) < 0.1f && self.getProjectileCount() > 0) {
                 move.setThrowProjectile(true);
                 log("!!!use projectiles");
             }
@@ -339,8 +371,18 @@ public final class MyStrategy implements Strategy {
         angleToWaypoint = self.getAngleTo(nextX, nextY);
         speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-        move.setWheelTurn(angleToWaypoint);
-        move.setEnginePower(0.75d);
+        if (getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE) {
+            move.setWheelTurn(angleToWaypoint * -1);
+            move.setEnginePower(-1);
+        } else {
+            if (getMoveBackWardDelta() <=
+                    TICKS_COUNT_FOR_DISTANCE + 20 && getMoveBackWardDelta() >= TICKS_COUNT_FOR_DISTANCE) {
+                move.setWheelTurn(angleToWaypoint * -1);
+            } else {
+                move.setWheelTurn(angleToWaypoint);
+            }
+            move.setEnginePower(0.75d);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

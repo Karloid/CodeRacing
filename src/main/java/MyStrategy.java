@@ -234,7 +234,7 @@ public final class MyStrategy implements Strategy {
         log("angleToWaypoint: " + angleToWaypoint);
         int reverseMoveFactor = reverseMove ? -1 : 1;
         int backwardSpeed = -1 * reverseMoveFactor;
-        double normalSpeed = (speedModule < 15 ? 1d : 0.75d) * reverseMoveFactor;
+        double normalSpeed = (speedModule < 15 ? 1d : 0.75d) * reverseMoveFactor * getMap03HackSpeedFactor();
 
         if (getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE) {
             setWheelTurn(angleToWaypoint * -1 * reverseMoveFactor);
@@ -248,6 +248,13 @@ public final class MyStrategy implements Strategy {
             }
             move.setEnginePower(normalSpeed);
         }
+    }
+
+    private double getMap03HackSpeedFactor() {
+        if (!isMap03()) return 1d;
+        if (world.getTick() < 380)
+            return 0.3;
+        return 1;
     }
 
     private void setWheelTurn(double v) {

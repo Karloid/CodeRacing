@@ -45,6 +45,9 @@ public final class MyStrategy implements Strategy {
     private int moveBackwardPoint = -TICKS_COUNT_FOR_DISTANCE;
     private boolean reverseMove;
 
+    private int[] lastWaypoint;
+    private int lastWaypointInd;
+
     @Override
     public void move(Car self, World world, Game game, Move move) {
 
@@ -91,13 +94,30 @@ public final class MyStrategy implements Strategy {
 
     private void findCurrentWaypoint() {
         if (isMap03() || isMap04() || isMap05()) {
-            int[] currentTile = getWaypoints()[curWaypointInd];
-            if ((int) (self.getX() / game.getTrackTileSize()) == currentTile[0] && (int) (self.getY() / game.getTrackTileSize()) == currentTile[1]) {
-                curWaypointInd++;
-                if (curWaypointInd >= getWaypoints().length) {
-                    curWaypointInd = 0;
-                }
+
+
+            int[] currentWaypoint = getWaypoints()[this.curWaypointInd];
+
+            int previousInd = this.curWaypointInd - 1;
+            if (previousInd < 0) {
+                previousInd = getWaypoints().length - 1;
             }
+            int[] previousTile = getWaypoints()[previousInd];
+
+            if (getCurTileX() == currentWaypoint[0] && getCurTileY() == currentWaypoint[1]) {
+                lastWaypoint = currentWaypoint;
+                lastWaypointInd = curWaypointInd;
+                this.curWaypointInd++;
+                if (this.curWaypointInd >= getWaypoints().length) {
+                    this.curWaypointInd = 0;
+                }
+
+
+            } else if (lastWaypoint != null && (getCurTileX() != lastWaypoint[X] || getCurTileY() != lastWaypoint[Y])) {
+                this.curWaypointInd = lastWaypointInd;
+            }
+
+
         } else {
             boolean find = false;
             int realNextX = getNextWaypointX();
@@ -117,6 +137,14 @@ public final class MyStrategy implements Strategy {
                 }
             }
         }
+    }
+
+    private int getCurTileY() {
+        return (int) (self.getY() / game.getTrackTileSize());
+    }
+
+    private int getCurTileX() {
+        return (int) (self.getX() / game.getTrackTileSize());
     }
 
     private int getNextWaypointX() {
@@ -219,7 +247,7 @@ public final class MyStrategy implements Strategy {
         angleToWaypoint = self.getAngleTo(nextX, nextY);
         speedModule = hypot(self.getSpeedX(), self.getSpeedY());
 
-        if (abs(angleToWaypoint) > 2f && getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE + GAP) {
+  /*      if (abs(angleToWaypoint) > 2f && getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE + GAP) {
             if (angleToWaypoint > 0) {
                 angleToWaypoint = angleToWaypoint - PI;
             } else {
@@ -228,7 +256,7 @@ public final class MyStrategy implements Strategy {
             reverseMove = true;
         } else {
             reverseMove = false;
-        }
+        }*/
 
 
         log("angleToWaypoint: " + angleToWaypoint);

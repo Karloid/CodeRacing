@@ -18,7 +18,7 @@ public final class MyStrategy implements Strategy {
     public static final double debugKoef = 16d;
     public static final String MAP_03 = "map03";
     private static final String MAP_04 = "map04";
-    public static final int TICKS_COUNT_FOR_DISTANCE = 80;
+    public static final int TICKS_COUNT_FOR_DISTANCE = 70;
     public static final int GAP = 40;
     private static final String MAP_02 = "map02";
     private static final String MAP_01 = "map01";
@@ -474,7 +474,11 @@ public final class MyStrategy implements Strategy {
     }
 
     private void setWheelTurn(double v) {
-        move.setWheelTurn(v * 32.0D / PI);
+        if (isNitroTitle()) {
+            move.setWheelTurn(v);
+        } else {
+            move.setWheelTurn(v * 32.0D / PI);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1282,6 +1286,12 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 4}
             ));
+
+            slowTilesMap.put(MAP_08, Arrays.asList(
+                    new int[]{4, 11},
+                    new int[]{0, 2},
+                    new int[]{0, 1}
+            ));
             slowTilesMap.put(MAP_06, Arrays.asList(
                     new int[]{7, 12},
                     new int[]{8, 12},
@@ -1324,6 +1334,36 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 6},
                     new int[]{2, 7}
+            ));
+
+            nitroTilesMap.put(MAP_08, Arrays.asList(
+                    new int[]{10, 11},
+                    new int[]{9, 11},
+                    new int[]{8, 11},
+                    new int[]{7, 11},
+                    new int[]{6, 11},
+                    new int[]{2, 11},
+                    new int[]{0, 10},
+                    new int[]{0, 9},
+                    new int[]{0, 8},
+                    new int[]{0, 7},
+                    new int[]{0, 6},
+                    new int[]{0, 5},
+                    new int[]{0, 4},
+                    new int[]{1, 0},
+                    new int[]{2, 0},
+                    new int[]{3, 0},
+                    new int[]{4, 0},
+                    new int[]{5, 0},
+                    new int[]{6, 0},
+                    new int[]{7, 0},
+                    new int[]{8, 0},
+                    new int[]{9, 0},
+                    new int[]{8, 4},
+                    new int[]{11, 7},
+                    new int[]{11, 8},
+                    new int[]{11, 9},
+                    new int[]{11, 11}
             ));
             nitroTilesMap.put(MAP_07, Arrays.asList(
                     new int[]{9, 7},

@@ -26,6 +26,7 @@ public final class MyStrategy implements Strategy {
     private static final String MAP_06 = "map06";
     public static final String MAP_05 = "map05";
     public static final int MAX_SPEED = 32;
+    private static final String MAP_07 = "map07";
 
     private Car self;
     private World world;
@@ -149,7 +150,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean haveWaypoints() {
-        return isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
+        return isMap(MAP_DEFAULT) || isMap(MAP_01)|| isMap(MAP_07) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
     }
 
     private int getCurTileY() {
@@ -174,11 +175,75 @@ public final class MyStrategy implements Strategy {
             customMapWaypoints.put(MAP_04, getMap04Waypoints());
             customMapWaypoints.put(MAP_05, getMap05Waypoints());
             customMapWaypoints.put(MAP_06, getMap06Waypoints());
+            customMapWaypoints.put(MAP_07, getMap07Waypoints());
         }
         int[][] waypoints = customMapWaypoints.get(world.getMapName());
         if (waypoints != null)
             return waypoints;
         return world.getWaypoints();
+    }
+
+    private int[][] getMap07Waypoints() {
+        return new int[][]{ new int[]{0,13},
+                new int[]{0,12},
+                new int[]{0,11},
+                new int[]{0,10},
+                new int[]{1,10},
+                new int[]{1,9},
+                new int[]{2,9},
+                new int[]{2,8},
+                new int[]{3,8},
+                new int[]{3,7},
+                new int[]{4,7},
+                new int[]{4,6},
+                new int[]{5,6},
+                new int[]{5,5},
+                new int[]{6,5},
+                new int[]{6,4},
+                new int[]{7,4},
+                new int[]{7,3},
+                new int[]{8,3},
+                new int[]{8,2},
+                new int[]{9,2},
+                new int[]{9,1},
+                new int[]{10,1},
+                new int[]{10,0},
+                new int[]{11,0},
+                new int[]{12,0},
+                new int[]{13,0},
+                new int[]{14,0},
+                new int[]{14,1},
+                new int[]{15,1},
+                new int[]{15,2},
+                new int[]{15,3},
+                new int[]{15,4},
+                new int[]{15,5},
+                new int[]{15,6},
+                new int[]{15,7},
+                new int[]{15,8},
+                new int[]{15,9},
+                new int[]{15,10},
+                new int[]{15,11},
+                new int[]{15,12},
+                new int[]{15,13},
+                new int[]{15,14},
+                new int[]{14,14},
+                new int[]{14,15},
+                new int[]{13,15},
+                new int[]{12,15},
+                new int[]{11,15},
+                new int[]{10,15},
+                new int[]{9,15},
+                new int[]{8,15},
+                new int[]{7,15},
+                new int[]{6,15},
+                new int[]{5,15},
+                new int[]{4,15},
+                new int[]{3,15},
+                new int[]{2,15},
+                new int[]{1,15},
+                new int[]{1,14},
+                new int[]{0,14},};
     }
 
 
@@ -414,8 +479,8 @@ public final class MyStrategy implements Strategy {
             tileType = getHackyTileType(tileType, new int[]{9, 13}, TileType.LEFT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{14, 14}, TileType.LEFT_TOP_CORNER);
             tileType = getHackyTileType(tileType, new int[]{14, 14}, TileType.LEFT_TOP_CORNER);
-            tileType = getHackyTileType(tileType, new int[]{13,13}, TileType.RIGHT_BOTTOM_CORNER);
-            tileType = getHackyTileType(tileType, new int[]{6,13}, TileType.LEFT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{13, 13}, TileType.RIGHT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{6, 13}, TileType.LEFT_TOP_CORNER);
         }
 
         double cornerTileSideOffset = cornerTileOffset / 6;
@@ -444,6 +509,11 @@ public final class MyStrategy implements Strategy {
                 topX -= cornerTileSideOffset;
                 topY -= cornerTileSideOffset;
                 break;
+       /*     default:
+                topX += cornerTileOffset/4;
+                topY += cornerTileOffset/4;
+                botX -= cornerTileOffset/4;
+                botY -= cornerTileOffset/4;*/
         }
 
         int mediumX = topX + (botX - topX) / 2;
@@ -1164,6 +1234,38 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 6},
                     new int[]{2, 7}
+            ));
+            nitroTilesMap.put(MAP_07, Arrays.asList(
+                    new int[]{9,7},
+                    new int[]{0,14},
+                    new int[]{0,13},
+                    new int[]{0,12},
+                    new int[]{11,0},
+                    new int[]{15,1},
+                    new int[]{15,2},
+                    new int[]{15,3},
+                    new int[]{15,4},
+                    new int[]{15,5},
+                    new int[]{15,6},
+                    new int[]{15,7},
+                    new int[]{15,8},
+                    new int[]{15,9},
+                    new int[]{15,10},
+                    new int[]{15,11},
+                    new int[]{13,15},
+                    new int[]{12,15},
+                    new int[]{11,15},
+                    new int[]{10,15},
+                    new int[]{9,15},
+                    new int[]{8,15},
+                    new int[]{7,15},
+                    new int[]{6,15},
+                    new int[]{5,15},
+                    new int[]{4,15},
+                    new int[]{10,0},
+                    new int[]{3,15},
+                    new int[]{1,14},
+                    new int[]{1,15}
             ));
             nitroTilesMap.put(MAP_05, Arrays.asList(
                     new int[]{4, 14},

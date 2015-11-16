@@ -25,6 +25,7 @@ public final class MyStrategy implements Strategy {
     private static final String MAP_DEFAULT = "default";
     private static final String MAP_06 = "map06";
     public static final String MAP_05 = "map05";
+    public static final int MAX_SPEED = 32;
 
     private Car self;
     private World world;
@@ -212,7 +213,7 @@ public final class MyStrategy implements Strategy {
             log("!!! use nitro!");
         }
 
-        if (distanceToWaypoint < game.getTrackTileSize() && isCorner(curWaypointInd) && self.getOilCanisterCount() > 0 && notLast()) {
+        if (distanceToWaypoint < game.getTrackTileSize() / 1.5f && isCorner(curWaypointInd) && self.getOilCanisterCount() > 0 && notLast()) {
             move.setSpillOil(true);
             log("use oil!!1");
         }
@@ -235,8 +236,8 @@ public final class MyStrategy implements Strategy {
 
     private boolean isBrakeNeed() {
         boolean angleStuff = false/*speedModule * speedModule * abs(angleToWaypoint) > 2.5 * 2.5 * PI*/;
-        float carefulCof = self.getDurability() < 0.25d ? 0.8f : 1f;
-        float maxSpeed = 28 * carefulCof;
+        float carefulCof = self.getDurability() < 0.15d ? 0.8f : 1f;
+        float maxSpeed = MAX_SPEED * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
         float maxSpeedOnCorner = 14 * carefulCof;
         boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(nextX, nextY)) < game.getTrackTileSize() * 0.8f;
@@ -313,7 +314,7 @@ public final class MyStrategy implements Strategy {
         // log("angleToWaypoint: " + angleToWaypoint);
         int reverseMoveFactor = reverseMove ? -1 : 1;
         int backwardPower = -1 * reverseMoveFactor;
-        double normalPower = (speedModule < 15 ? 1d : 0.75d) * reverseMoveFactor * getMap03HackSpeedFactor();
+        double normalPower = (isSlowTile() ? 0.75d : 1d) * reverseMoveFactor * getMap03HackSpeedFactor();
 
         if (getMoveBackWardDelta() >= 0 && getMoveBackWardDelta() < TICKS_COUNT_FOR_DISTANCE) {
             setWheelTurn(angleToWaypoint * -1 * reverseMoveFactor);
@@ -569,11 +570,20 @@ public final class MyStrategy implements Strategy {
             rectSize = dSize(game.getTrackTileSize(), 0);
             margin = dSize(game.getTrackTileMargin(), 0);
 
+            drawTexts();
             drawWaypoints();
             drawTiles();
             drawFPoints();
             drawCars();
             drawMyLines();
+        }
+
+        private void drawTexts() {
+            int stringPadding = sidePadding / 2;
+            g2.drawString("speed: " + f(speedModule), stringPadding, sidePadding / 2);
+            g2.drawString("max_speed: " + f(MAX_SPEED), stringPadding * 5, sidePadding / 2);
+            g2.drawString("enigePower: " + f(self.getEnginePower()), stringPadding * 10, sidePadding / 2);
+            //  g2.drawString("angle: " + f(angleToWaypoint), stringPadding * 10, sidePadding/2);
         }
 
         private void drawWaypoints() {
@@ -1117,7 +1127,9 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 13},
                     new int[]{2, 14},
                     new int[]{3, 12},
-                    new int[]{10, 13}
+                    new int[]{10, 13},
+                    new int[]{1, 15},
+                    new int[]{0, 1}
             ));
         }
         List<int[]> slowTiles = slowTilesMap.get(world.getMapName());

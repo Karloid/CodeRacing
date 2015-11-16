@@ -28,6 +28,7 @@ public final class MyStrategy implements Strategy {
     public static final int MAX_SPEED = 32;
     private static final String MAP_07 = "map07";
     private static final String MAP_08 = "map08";
+    private static final String MAP_09 = "map09";
 
     private Car self;
     private World world;
@@ -151,7 +152,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean haveWaypoints() {
-        return isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_07) || isMap(MAP_08) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
+        return isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_07) || isMap(MAP_08) || isMap(MAP_09) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
     }
 
     private int getCurTileY() {
@@ -178,145 +179,13 @@ public final class MyStrategy implements Strategy {
             customMapWaypoints.put(MAP_06, getMap06Waypoints());
             customMapWaypoints.put(MAP_07, getMap07Waypoints());
             customMapWaypoints.put(MAP_08, getMap08Waypoints());
+            customMapWaypoints.put(MAP_09, getMap09Waypoints());
         }
         int[][] waypoints = customMapWaypoints.get(world.getMapName());
         if (waypoints != null)
             return waypoints;
         return world.getWaypoints();
     }
-
-    private int[][] getMap08Waypoints() {
-        return new int[][]{
-                new int[]{10, 11},
-                new int[]{9, 11},
-                new int[]{8, 11},
-                new int[]{7, 11},
-                new int[]{6, 11},
-                new int[]{5, 11},
-                new int[]{4, 11},
-                new int[]{3, 11},
-                new int[]{3, 10},
-                new int[]{3, 9},
-                new int[]{4, 9},
-                new int[]{5, 9},
-                new int[]{6, 9},
-                new int[]{7, 9},
-                new int[]{8, 9},
-                new int[]{8, 10},
-                new int[]{8, 11},
-                new int[]{7, 11},
-                new int[]{6, 11},
-                new int[]{5, 11},
-                new int[]{4, 11},
-                new int[]{3, 11},
-                new int[]{2, 11},
-                new int[]{1, 11},
-                new int[]{0, 11},
-                new int[]{0, 10},
-                new int[]{0, 9},
-                new int[]{0, 8},
-                new int[]{0, 7},
-                new int[]{0, 6},
-                new int[]{0, 5},
-                new int[]{0, 4},
-                new int[]{0, 3},
-                new int[]{0, 2},
-                new int[]{0, 1},
-                new int[]{1, 1},
-                new int[]{1, 0},
-                new int[]{2, 0},
-                new int[]{3, 0},
-                new int[]{4, 0},
-                new int[]{5, 0},
-                new int[]{6, 0},
-                new int[]{7, 0},
-                new int[]{8, 0},
-                new int[]{9, 0},
-                new int[]{10, 0},
-                new int[]{11, 0},
-                new int[]{11, 1},
-                new int[]{11, 2},
-                new int[]{11, 3},
-                new int[]{10, 3},
-                new int[]{9, 3},
-                new int[]{8, 3},
-                new int[]{8, 4},
-                new int[]{8, 5},
-                new int[]{8, 6},
-                new int[]{8, 7},
-                new int[]{9, 7},
-                new int[]{10, 7},
-                new int[]{11, 7},
-                new int[]{11, 8},
-                new int[]{11, 9},
-                new int[]{11, 10},
-                new int[]{11, 11},
-        };
-    }
-
-    private int[][] getMap07Waypoints() {
-        return new int[][]{new int[]{0, 13},
-                new int[]{0, 12},
-                new int[]{0, 11},
-                new int[]{0, 10},
-                new int[]{1, 10},
-                new int[]{1, 9},
-                new int[]{2, 9},
-                new int[]{2, 8},
-                new int[]{3, 8},
-                new int[]{3, 7},
-                new int[]{4, 7},
-                new int[]{4, 6},
-                new int[]{5, 6},
-                new int[]{5, 5},
-                new int[]{6, 5},
-                new int[]{6, 4},
-                new int[]{7, 4},
-                new int[]{7, 3},
-                new int[]{8, 3},
-                new int[]{8, 2},
-                new int[]{9, 2},
-                new int[]{9, 1},
-                new int[]{10, 1},
-                new int[]{10, 0},
-                new int[]{11, 0},
-                new int[]{12, 0},
-                new int[]{13, 0},
-                new int[]{14, 0},
-                new int[]{14, 1},
-                new int[]{15, 1},
-                new int[]{15, 2},
-                new int[]{15, 3},
-                new int[]{15, 4},
-                new int[]{15, 5},
-                new int[]{15, 6},
-                new int[]{15, 7},
-                new int[]{15, 8},
-                new int[]{15, 9},
-                new int[]{15, 10},
-                new int[]{15, 11},
-                new int[]{15, 12},
-                new int[]{15, 13},
-                new int[]{15, 14},
-                new int[]{14, 14},
-                new int[]{14, 15},
-                new int[]{13, 15},
-                new int[]{12, 15},
-                new int[]{11, 15},
-                new int[]{10, 15},
-                new int[]{9, 15},
-                new int[]{8, 15},
-                new int[]{7, 15},
-                new int[]{6, 15},
-                new int[]{5, 15},
-                new int[]{4, 15},
-                new int[]{3, 15},
-                new int[]{2, 15},
-                new int[]{1, 15},
-                new int[]{1, 14},
-                new int[]{0, 14},};
-    }
-
 
     private boolean isMap05() {
         return isMap(MAP_05);
@@ -559,6 +428,14 @@ public final class MyStrategy implements Strategy {
                 tileType = getHackyTileType(tileType, new int[]{8, 11}, TileType.RIGHT_BOTTOM_CORNER);
             if (curWaypointInd < 8)
                 tileType = getHackyTileType(tileType, new int[]{3, 11}, TileType.LEFT_BOTTOM_CORNER);
+        } else if (isMap(MAP_09)) {
+            if (curWaypointInd < 9)
+                tileType = getHackyTileType(tileType, new int[]{1, 9}, TileType.LEFT_BOTTOM_CORNER);
+            if (curWaypointInd > 21)
+                tileType = getHackyTileType(tileType, new int[]{1, 7}, TileType.RIGHT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{2, 2}, TileType.RIGHT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{1, 2}, TileType.LEFT_TOP_CORNER);
+
         }
 
         double cornerTileSideOffset = cornerTileOffset / 6;
@@ -826,15 +703,31 @@ public final class MyStrategy implements Strategy {
                             break;
                         case LEFT_HEADED_T:
                             g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
                             break;
                         case RIGHT_HEADED_T:
                             g2.fillRect(dSizeW(x), dSizeW(y), margin, rectSize);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
                             break;
                         case TOP_HEADED_T:
                             g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, rectSize, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
                             break;
                         case BOTTOM_HEADED_T:
                             g2.fillRect(dSizeW(x), dSizeW(y), rectSize, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y), margin, margin);
+                            g2.fillRect(dSizeW(x), dSizeW(y) + rectSize - margin, margin, margin);
+                            g2.fillRect(dSizeW(x) + rectSize - margin, dSizeW(y) + rectSize - margin, margin, margin);
                             break;
                         case CROSSROADS:
                             g2.fillRect(dSizeW(x), dSizeW(y), margin, margin);
@@ -1292,6 +1185,22 @@ public final class MyStrategy implements Strategy {
                     new int[]{0, 2},
                     new int[]{0, 1}
             ));
+
+            slowTilesMap.put(MAP_09, Arrays.asList(
+                    new int[]{2, 9},
+                    new int[]{10, 11},
+                    new int[]{11, 1},
+                    new int[]{6, 0},
+                    new int[]{5, 3},
+                    new int[]{9, 8},
+                    new int[]{1, 3},
+                    new int[]{1, 2},
+                    new int[]{2, 2},
+                    new int[]{1, 10},
+                    new int[]{0, 7},
+                    new int[]{0, 6},
+                    new int[]{1, 10}
+            ));
             slowTilesMap.put(MAP_06, Arrays.asList(
                     new int[]{7, 12},
                     new int[]{8, 12},
@@ -1334,6 +1243,63 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 5},
                     new int[]{2, 6},
                     new int[]{2, 7}
+            ));
+            nitroTilesMap.put(MAP_09, Arrays.asList(
+                    new int[]{8, 9},
+                    new int[]{7, 9},
+                    new int[]{6, 9},
+                    new int[]{5, 9},
+                    new int[]{4, 9},
+                    new int[]{3, 9},
+                    new int[]{1, 8},
+                    new int[]{1, 9},
+                    new int[]{1, 7},
+                    new int[]{1, 6},
+                    new int[]{1, 5},
+                    new int[]{1, 4},
+                    new int[]{0, 0},
+                    new int[]{0, 1},
+                    new int[]{0, 2},
+                    new int[]{0, 3},
+                    new int[]{0, 4},
+                    new int[]{0, 5},
+                    new int[]{1, 11},
+                    new int[]{2, 11},
+                    new int[]{3, 11},
+                    new int[]{4, 11},
+                    new int[]{5, 11},
+                    new int[]{7, 11},
+                    new int[]{9, 11},
+                    new int[]{11, 11},
+                    new int[]{11, 10},
+                    new int[]{11, 9},
+                    new int[]{11, 8},
+                    new int[]{11, 7},
+                    new int[]{11, 5},
+                    new int[]{11, 4},
+                    new int[]{11, 3},
+                    new int[]{11, 2},
+                    new int[]{11, 0},
+                    new int[]{10, 0},
+                    new int[]{9, 0},
+                    new int[]{8, 0},
+                    new int[]{7, 0},
+                    new int[]{5, 0},
+                    new int[]{5, 1},
+                    new int[]{5, 2},
+                    new int[]{5, 3},
+                    new int[]{9, 2},
+                    new int[]{9, 3},
+                    new int[]{9, 4},
+                    new int[]{9, 5},
+                    new int[]{9, 6},
+                    new int[]{9, 7},
+                    new int[]{6,6},
+                    new int[]{9,9},
+                    new int[]{8,11},
+                    new int[]{6,11},
+                    new int[]{11,6}
+
             ));
 
             nitroTilesMap.put(MAP_08, Arrays.asList(
@@ -1488,5 +1454,221 @@ public final class MyStrategy implements Strategy {
         }
         return slowTiles;
     }
+
+
+    private int[][] getMap08Waypoints() {
+        return new int[][]{
+                new int[]{10, 11},
+                new int[]{9, 11},
+                new int[]{8, 11},
+                new int[]{7, 11},
+                new int[]{6, 11},
+                new int[]{5, 11},
+                new int[]{4, 11},
+                new int[]{3, 11},
+                new int[]{3, 10},
+                new int[]{3, 9},
+                new int[]{4, 9},
+                new int[]{5, 9},
+                new int[]{6, 9},
+                new int[]{7, 9},
+                new int[]{8, 9},
+                new int[]{8, 10},
+                new int[]{8, 11},
+                new int[]{7, 11},
+                new int[]{6, 11},
+                new int[]{5, 11},
+                new int[]{4, 11},
+                new int[]{3, 11},
+                new int[]{2, 11},
+                new int[]{1, 11},
+                new int[]{0, 11},
+                new int[]{0, 10},
+                new int[]{0, 9},
+                new int[]{0, 8},
+                new int[]{0, 7},
+                new int[]{0, 6},
+                new int[]{0, 5},
+                new int[]{0, 4},
+                new int[]{0, 3},
+                new int[]{0, 2},
+                new int[]{0, 1},
+                new int[]{1, 1},
+                new int[]{1, 0},
+                new int[]{2, 0},
+                new int[]{3, 0},
+                new int[]{4, 0},
+                new int[]{5, 0},
+                new int[]{6, 0},
+                new int[]{7, 0},
+                new int[]{8, 0},
+                new int[]{9, 0},
+                new int[]{10, 0},
+                new int[]{11, 0},
+                new int[]{11, 1},
+                new int[]{11, 2},
+                new int[]{11, 3},
+                new int[]{10, 3},
+                new int[]{9, 3},
+                new int[]{8, 3},
+                new int[]{8, 4},
+                new int[]{8, 5},
+                new int[]{8, 6},
+                new int[]{8, 7},
+                new int[]{9, 7},
+                new int[]{10, 7},
+                new int[]{11, 7},
+                new int[]{11, 8},
+                new int[]{11, 9},
+                new int[]{11, 10},
+                new int[]{11, 11},
+        };
+    }
+
+    private int[][] getMap09Waypoints() {
+        return new int[][]{
+                new int[]{8, 9},
+                new int[]{7, 9},
+                new int[]{6, 9},
+                new int[]{5, 9},
+                new int[]{4, 9},
+                new int[]{3, 9},
+                new int[]{2, 9},
+                new int[]{1, 9},
+                new int[]{1, 8},
+                new int[]{1, 7},
+                new int[]{1, 6},
+                new int[]{1, 5},
+                new int[]{1, 4},
+                new int[]{1, 4},
+                new int[]{1, 3},
+                new int[]{1, 2},
+                new int[]{2, 2},
+                new int[]{2, 1},
+                new int[]{2, 0},
+                new int[]{1, 0},
+                new int[]{0, 0},
+                new int[]{0, 1},
+                new int[]{0, 2},
+                new int[]{0, 3},
+                new int[]{0, 4},
+                new int[]{0, 5},
+                new int[]{0, 6},
+                new int[]{0, 7},
+                new int[]{1, 7},
+                new int[]{1, 8},
+                new int[]{1, 9},
+                new int[]{1, 10},
+                new int[]{1, 11},
+                new int[]{2, 11},
+                new int[]{3, 11},
+                new int[]{4, 11},
+                new int[]{5, 11},
+                new int[]{6, 11},
+                new int[]{7, 11},
+                new int[]{8, 11},
+                new int[]{9, 11},
+                new int[]{10, 11},
+                new int[]{11, 11},
+                new int[]{11, 10},
+                new int[]{11, 9},
+                new int[]{11, 8},
+                new int[]{11, 7},
+                new int[]{11, 6},
+                new int[]{11, 5},
+                new int[]{11, 4},
+                new int[]{11, 3},
+                new int[]{11, 2},
+                new int[]{11, 1},
+                new int[]{11, 0},
+                new int[]{10, 0},
+                new int[]{9, 0},
+                new int[]{8, 0},
+                new int[]{7, 0},
+                new int[]{6, 0},
+                new int[]{5, 0},
+                new int[]{5, 1},
+                new int[]{5, 2},
+                new int[]{5, 3},
+                new int[]{5, 4},
+                new int[]{6, 4},
+                new int[]{7, 4},
+                new int[]{7, 3},
+                new int[]{7, 2},
+                new int[]{8, 2},
+                new int[]{9, 2},
+                new int[]{9, 3},
+                new int[]{9, 4},
+                new int[]{9, 5},
+                new int[]{9, 6},
+                new int[]{9, 7},
+                new int[]{9, 8},
+                new int[]{9, 9},
+        };
+    }
+
+    private int[][] getMap07Waypoints() {
+        return new int[][]{new int[]{0, 13},
+                new int[]{0, 12},
+                new int[]{0, 11},
+                new int[]{0, 10},
+                new int[]{1, 10},
+                new int[]{1, 9},
+                new int[]{2, 9},
+                new int[]{2, 8},
+                new int[]{3, 8},
+                new int[]{3, 7},
+                new int[]{4, 7},
+                new int[]{4, 6},
+                new int[]{5, 6},
+                new int[]{5, 5},
+                new int[]{6, 5},
+                new int[]{6, 4},
+                new int[]{7, 4},
+                new int[]{7, 3},
+                new int[]{8, 3},
+                new int[]{8, 2},
+                new int[]{9, 2},
+                new int[]{9, 1},
+                new int[]{10, 1},
+                new int[]{10, 0},
+                new int[]{11, 0},
+                new int[]{12, 0},
+                new int[]{13, 0},
+                new int[]{14, 0},
+                new int[]{14, 1},
+                new int[]{15, 1},
+                new int[]{15, 2},
+                new int[]{15, 3},
+                new int[]{15, 4},
+                new int[]{15, 5},
+                new int[]{15, 6},
+                new int[]{15, 7},
+                new int[]{15, 8},
+                new int[]{15, 9},
+                new int[]{15, 10},
+                new int[]{15, 11},
+                new int[]{15, 12},
+                new int[]{15, 13},
+                new int[]{15, 14},
+                new int[]{14, 14},
+                new int[]{14, 15},
+                new int[]{13, 15},
+                new int[]{12, 15},
+                new int[]{11, 15},
+                new int[]{10, 15},
+                new int[]{9, 15},
+                new int[]{8, 15},
+                new int[]{7, 15},
+                new int[]{6, 15},
+                new int[]{5, 15},
+                new int[]{4, 15},
+                new int[]{3, 15},
+                new int[]{2, 15},
+                new int[]{1, 15},
+                new int[]{1, 14},
+                new int[]{0, 14},};
+    }
+
 
 }

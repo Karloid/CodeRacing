@@ -412,6 +412,10 @@ public final class MyStrategy implements Strategy {
             // tileType = getHackyTileType(tileType, new int[]{2, 1}, TileType.RIGHT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{7, 13}, TileType.RIGHT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{9, 13}, TileType.LEFT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{14, 14}, TileType.LEFT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{14, 14}, TileType.LEFT_TOP_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{13,13}, TileType.RIGHT_BOTTOM_CORNER);
+            tileType = getHackyTileType(tileType, new int[]{6,13}, TileType.LEFT_TOP_CORNER);
         }
 
         double cornerTileSideOffset = cornerTileOffset / 6;

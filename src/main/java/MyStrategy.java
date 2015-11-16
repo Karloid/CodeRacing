@@ -407,8 +407,8 @@ public final class MyStrategy implements Strategy {
         if (isMap(MAP_03) && tilesIsEqual(new int[]{3, 0}, tmpWaypointTile)) {
             tileType = TileType.LEFT_TOP_CORNER;
         } else if (isMap(MAP_06)) {
-            tileType = getHackyTileType(tileType, new int[]{2, 13}, TileType.LEFT_TOP_CORNER);
-            tileType = getHackyTileType(tileType, new int[]{2, 1}, TileType.LEFT_BOTTOM_CORNER);
+            //  tileType = getHackyTileType(tileType, new int[]{2, 13}, TileType.RIGHT_BOTTOM_CORNER);
+            // tileType = getHackyTileType(tileType, new int[]{2, 1}, TileType.RIGHT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{7, 13}, TileType.RIGHT_BOTTOM_CORNER);
             tileType = getHackyTileType(tileType, new int[]{9, 13}, TileType.LEFT_BOTTOM_CORNER);
         }
@@ -756,19 +756,17 @@ public final class MyStrategy implements Strategy {
                 new int[]{1, 0},
                 new int[]{2, 0},
                 new int[]{2, 1},
-                new int[]{3, 1},
-                new int[]{3, 2},
-                new int[]{3, 3},
-                new int[]{3, 4},
-                new int[]{3, 5},
-                new int[]{3, 6},
-                new int[]{3, 7},
-                new int[]{3, 8},
-                new int[]{3, 9},
-                new int[]{3, 10},
-                new int[]{3, 11},
-                new int[]{3, 12},
-                new int[]{3, 13},
+                new int[]{2, 2},
+                new int[]{2, 3},
+                new int[]{2, 4},
+                new int[]{2, 5},
+                new int[]{2, 6},
+                new int[]{2, 7},
+                new int[]{2, 8},
+                new int[]{2, 9},
+                new int[]{2, 10},
+                new int[]{2, 11},
+                new int[]{2, 12},
                 new int[]{2, 13},
                 new int[]{2, 14},
                 new int[]{3, 14},
@@ -1119,7 +1117,7 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 13},
                     new int[]{2, 14},
                     new int[]{3, 12},
-                    new int[]{10,13}
+                    new int[]{10, 13}
             ));
         }
         List<int[]> slowTiles = slowTilesMap.get(world.getMapName());
@@ -1144,10 +1142,12 @@ public final class MyStrategy implements Strategy {
                     new int[]{0, 10},
                     new int[]{0, 9},
                     new int[]{0, 8},
-                    new int[]{3, 4},
-                    new int[]{3, 5},
-                    new int[]{3, 6},
-                    new int[]{3, 7}
+                    new int[]{2, 2},
+                    new int[]{2, 3},
+                    new int[]{2, 4},
+                    new int[]{2, 5},
+                    new int[]{2, 6},
+                    new int[]{2, 7}
             ));
             nitroTilesMap.put(MAP_05, Arrays.asList(
                     new int[]{4, 14},

@@ -150,7 +150,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean haveWaypoints() {
-        return isMap(MAP_DEFAULT) || isMap(MAP_01)|| isMap(MAP_07) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
+        return isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_07) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
     }
 
     private int getCurTileY() {
@@ -184,66 +184,66 @@ public final class MyStrategy implements Strategy {
     }
 
     private int[][] getMap07Waypoints() {
-        return new int[][]{ new int[]{0,13},
-                new int[]{0,12},
-                new int[]{0,11},
-                new int[]{0,10},
-                new int[]{1,10},
-                new int[]{1,9},
-                new int[]{2,9},
-                new int[]{2,8},
-                new int[]{3,8},
-                new int[]{3,7},
-                new int[]{4,7},
-                new int[]{4,6},
-                new int[]{5,6},
-                new int[]{5,5},
-                new int[]{6,5},
-                new int[]{6,4},
-                new int[]{7,4},
-                new int[]{7,3},
-                new int[]{8,3},
-                new int[]{8,2},
-                new int[]{9,2},
-                new int[]{9,1},
-                new int[]{10,1},
-                new int[]{10,0},
-                new int[]{11,0},
-                new int[]{12,0},
-                new int[]{13,0},
-                new int[]{14,0},
-                new int[]{14,1},
-                new int[]{15,1},
-                new int[]{15,2},
-                new int[]{15,3},
-                new int[]{15,4},
-                new int[]{15,5},
-                new int[]{15,6},
-                new int[]{15,7},
-                new int[]{15,8},
-                new int[]{15,9},
-                new int[]{15,10},
-                new int[]{15,11},
-                new int[]{15,12},
-                new int[]{15,13},
-                new int[]{15,14},
-                new int[]{14,14},
-                new int[]{14,15},
-                new int[]{13,15},
-                new int[]{12,15},
-                new int[]{11,15},
-                new int[]{10,15},
-                new int[]{9,15},
-                new int[]{8,15},
-                new int[]{7,15},
-                new int[]{6,15},
-                new int[]{5,15},
-                new int[]{4,15},
-                new int[]{3,15},
-                new int[]{2,15},
-                new int[]{1,15},
-                new int[]{1,14},
-                new int[]{0,14},};
+        return new int[][]{new int[]{0, 13},
+                new int[]{0, 12},
+                new int[]{0, 11},
+                new int[]{0, 10},
+                new int[]{1, 10},
+                new int[]{1, 9},
+                new int[]{2, 9},
+                new int[]{2, 8},
+                new int[]{3, 8},
+                new int[]{3, 7},
+                new int[]{4, 7},
+                new int[]{4, 6},
+                new int[]{5, 6},
+                new int[]{5, 5},
+                new int[]{6, 5},
+                new int[]{6, 4},
+                new int[]{7, 4},
+                new int[]{7, 3},
+                new int[]{8, 3},
+                new int[]{8, 2},
+                new int[]{9, 2},
+                new int[]{9, 1},
+                new int[]{10, 1},
+                new int[]{10, 0},
+                new int[]{11, 0},
+                new int[]{12, 0},
+                new int[]{13, 0},
+                new int[]{14, 0},
+                new int[]{14, 1},
+                new int[]{15, 1},
+                new int[]{15, 2},
+                new int[]{15, 3},
+                new int[]{15, 4},
+                new int[]{15, 5},
+                new int[]{15, 6},
+                new int[]{15, 7},
+                new int[]{15, 8},
+                new int[]{15, 9},
+                new int[]{15, 10},
+                new int[]{15, 11},
+                new int[]{15, 12},
+                new int[]{15, 13},
+                new int[]{15, 14},
+                new int[]{14, 14},
+                new int[]{14, 15},
+                new int[]{13, 15},
+                new int[]{12, 15},
+                new int[]{11, 15},
+                new int[]{10, 15},
+                new int[]{9, 15},
+                new int[]{8, 15},
+                new int[]{7, 15},
+                new int[]{6, 15},
+                new int[]{5, 15},
+                new int[]{4, 15},
+                new int[]{3, 15},
+                new int[]{2, 15},
+                new int[]{1, 15},
+                new int[]{1, 14},
+                new int[]{0, 14},};
     }
 
 
@@ -600,6 +600,7 @@ public final class MyStrategy implements Strategy {
         private int rectSize;
         private int margin;
         private int size;
+        private Color fontColor = new Color(0xE1FFF1);
 
         public MyPanel() {
             super();
@@ -661,13 +662,27 @@ public final class MyStrategy implements Strategy {
         }
 
         private void drawWaypoints() {
-            g2.setColor(new Color(0x937026));
+            int i = 0;
             for (int[] xy : world.getWaypoints()) {
-                g2.fillRect(dSizeW(xy[X]), dSizeW(xy[Y]), rectSize, rectSize);
+                int x = dSizeW(xy[X]);
+                int y = dSizeW(xy[Y]);
+                g2.setColor(new Color(0x937026));
+                g2.fillRect(x, y, rectSize, rectSize);
+                g2.setColor(fontColor);
+
+                g2.drawString(i + "", x + rectSize - 20, y + 25);
+                i++;
             }
+            i = 0;
             g2.setColor(new Color(0xC7A66E));
             for (int[] xy : getWaypoints()) {
-                g2.fillRect(dSizeW(xy[X]) + margin * 2, dSizeW(xy[Y]) + margin * 2, rectSize - margin * 4, rectSize - margin * 4);
+                int x = dSizeW(xy[X]) + margin * 2;
+                int y = dSizeW(xy[Y]) + margin * 2;
+                g2.setColor(new Color(0xC7A66E));
+                g2.fillRect(x, y, rectSize - margin * 4, rectSize - margin * 4);
+                g2.setColor(fontColor);
+                g2.drawString(i + "", x + 3, y + 15);
+                i++;
             }
 
             g2.setColor(new Color(0xC78FB3));
@@ -1236,36 +1251,36 @@ public final class MyStrategy implements Strategy {
                     new int[]{2, 7}
             ));
             nitroTilesMap.put(MAP_07, Arrays.asList(
-                    new int[]{9,7},
-                    new int[]{0,14},
-                    new int[]{0,13},
-                    new int[]{0,12},
-                    new int[]{11,0},
-                    new int[]{15,1},
-                    new int[]{15,2},
-                    new int[]{15,3},
-                    new int[]{15,4},
-                    new int[]{15,5},
-                    new int[]{15,6},
-                    new int[]{15,7},
-                    new int[]{15,8},
-                    new int[]{15,9},
-                    new int[]{15,10},
-                    new int[]{15,11},
-                    new int[]{13,15},
-                    new int[]{12,15},
-                    new int[]{11,15},
-                    new int[]{10,15},
-                    new int[]{9,15},
-                    new int[]{8,15},
-                    new int[]{7,15},
-                    new int[]{6,15},
-                    new int[]{5,15},
-                    new int[]{4,15},
-                    new int[]{10,0},
-                    new int[]{3,15},
-                    new int[]{1,14},
-                    new int[]{1,15}
+                    new int[]{9, 7},
+                    new int[]{0, 14},
+                    new int[]{0, 13},
+                    new int[]{0, 12},
+                    new int[]{11, 0},
+                    new int[]{15, 1},
+                    new int[]{15, 2},
+                    new int[]{15, 3},
+                    new int[]{15, 4},
+                    new int[]{15, 5},
+                    new int[]{15, 6},
+                    new int[]{15, 7},
+                    new int[]{15, 8},
+                    new int[]{15, 9},
+                    new int[]{15, 10},
+                    new int[]{15, 11},
+                    new int[]{13, 15},
+                    new int[]{12, 15},
+                    new int[]{11, 15},
+                    new int[]{10, 15},
+                    new int[]{9, 15},
+                    new int[]{8, 15},
+                    new int[]{7, 15},
+                    new int[]{6, 15},
+                    new int[]{5, 15},
+                    new int[]{4, 15},
+                    new int[]{10, 0},
+                    new int[]{3, 15},
+                    new int[]{1, 14},
+                    new int[]{1, 15}
             ));
             nitroTilesMap.put(MAP_05, Arrays.asList(
                     new int[]{4, 14},

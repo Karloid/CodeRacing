@@ -284,7 +284,10 @@ public final class MyStrategy implements Strategy {
 
     private boolean isCorner(int curWaypointInd) {
         int[] xy = getWaypoints()[curWaypointInd];
-        TileType tileType = world.getTilesXY()[xy[0]][xy[1]];
+        return isCorner(world.getTilesXY()[xy[0]][xy[1]]);
+    }
+
+    private boolean isCorner(TileType tileType) {
         return tileType == TileType.LEFT_BOTTOM_CORNER || tileType == TileType.RIGHT_BOTTOM_CORNER || tileType == TileType.LEFT_TOP_CORNER || tileType == TileType.RIGHT_TOP_CORNER;
     }
 
@@ -343,7 +346,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private void setWheelTurn(double v) {
-        if (isNitroTitle()) {
+        if (isNitroTitle() && !isCorner(world.getTilesXY()[getCurTileX()][getCurTileY()]) && speedModule > 10) {
             move.setWheelTurn(v);
         } else {
             move.setWheelTurn(v * 32.0D / PI);
@@ -1183,7 +1186,14 @@ public final class MyStrategy implements Strategy {
             slowTilesMap.put(MAP_08, Arrays.asList(
                     new int[]{4, 11},
                     new int[]{0, 2},
-                    new int[]{0, 1}
+                    new int[]{0, 1},
+                    new int[]{7, 9},
+                    new int[]{11, 10},
+                    new int[]{8, 6},
+                    new int[]{9, 3},
+                    new int[]{11, 2},
+                    new int[]{10, 0},
+                    new int[]{1, 11}
             ));
 
             slowTilesMap.put(MAP_09, Arrays.asList(
@@ -1294,11 +1304,11 @@ public final class MyStrategy implements Strategy {
                     new int[]{9, 5},
                     new int[]{9, 6},
                     new int[]{9, 7},
-                    new int[]{6,6},
-                    new int[]{9,9},
-                    new int[]{8,11},
-                    new int[]{6,11},
-                    new int[]{11,6}
+                    new int[]{6, 6},
+                    new int[]{9, 9},
+                    new int[]{8, 11},
+                    new int[]{6, 11},
+                    new int[]{11, 6}
 
             ));
 
@@ -1315,6 +1325,7 @@ public final class MyStrategy implements Strategy {
                     new int[]{0, 7},
                     new int[]{0, 6},
                     new int[]{0, 5},
+                    new int[]{5, 9},
                     new int[]{0, 4},
                     new int[]{1, 0},
                     new int[]{2, 0},
@@ -1329,7 +1340,20 @@ public final class MyStrategy implements Strategy {
                     new int[]{11, 7},
                     new int[]{11, 8},
                     new int[]{11, 9},
-                    new int[]{11, 11}
+                    new int[]{11, 11},
+                    new int[]{11, 0},
+                    new int[]{11, 1},
+                    new int[]{11, 3},
+                    new int[]{10, 3},
+                    new int[]{8, 3},
+                    new int[]{8, 5},
+                    new int[]{8, 7},
+                    new int[]{9, 7},
+                    new int[]{3, 9},
+                    new int[]{4, 9},
+                    new int[]{6, 9},
+                    new int[]{0, 11},
+                    new int[]{0, 3}
             ));
             nitroTilesMap.put(MAP_07, Arrays.asList(
                     new int[]{9, 7},

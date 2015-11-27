@@ -18,7 +18,7 @@ public final class MyStrategy implements Strategy {
     public static final double debugKoef = 16d;
     public static final String MAP_03 = "map03";
     private static final String MAP_04 = "map04";
-    public static final int TICKS_COUNT_FOR_DISTANCE = 70;
+    public static final int TICKS_COUNT_FOR_DISTANCE = 90;
     public static final int GAP = 40;
     private static final String MAP_02 = "map02";
     private static final String MAP_01 = "map01";
@@ -95,7 +95,7 @@ public final class MyStrategy implements Strategy {
         //   log("distance: " + sum);
 
         if (world.getTick() > TICKS_COUNT_FOR_DISTANCE + game.getInitialFreezeDurationTicks()) {
-            if (sum < 80 && getMoveBackWardDelta() > TICKS_COUNT_FOR_DISTANCE * 3) {
+            if (sum < 140 && getMoveBackWardDelta() > TICKS_COUNT_FOR_DISTANCE * 3) {
                 log("Need to move back!!!");
                 moveBackwardPoint = world.getTick();
             }

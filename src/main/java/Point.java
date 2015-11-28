@@ -52,23 +52,29 @@ public class Point {
     }
 
     public void calcLinks() {
-        links = new HashSet<Link>();
+        links = new HashSet<>();
         if (this == context.getStartPoint()) {
-            addLinkToIfCan(context.getEndPoint());
+            addLinkToIfCan2(context.getEndPoint());
+            checkAllPoints();
         } else if (this == context.getEndPoint()) {
-            addLinkToIfCan(context.getStartPoint());
+            addLinkToIfCan2(context.getStartPoint());
+            checkAllPoints();
         } else {
-            addLinkToIfCan(context.getEndPoint());
-            addLinkToIfCan(context.getStartPoint());
+            addLinkToIfCan2(context.getEndPoint());
+            addLinkToIfCan2(context.getStartPoint());
         }
-/*        for (Obstacle obstacle : getContext().getObstacles()) {
-            for (Point point : obstacle.getPoints()) {
-                if (point != this) {
-                    addLinkToIfCan(point);
-                }
-            }
-        }*/
+    }
 
+    private void checkAllPoints() {
+        for (Point point : context.getAllPoints().values()) {
+            addLinkToIfCan2(point);
+        }
+    }
+
+    private void addLinkToIfCan2(Point point) {
+        if (context.inSameTile(this, point)) {
+            createLink(point);
+        }
     }
 
     private void addLinkToIfCan(Point pointGoal) {
@@ -237,6 +243,8 @@ public class Point {
     }
 
     public HashSet<Link> getLinks() {
+        if (links == null)
+            links = new HashSet<>();
         return links;
     }
 

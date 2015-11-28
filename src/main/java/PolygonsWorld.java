@@ -155,8 +155,8 @@ public class PolygonsWorld {
     private void calcLinksForPoints() {
         for (Map.Entry<LightPoint, Point> entry : allPoints.entrySet()) {
             Point currentPoint = entry.getValue();
+            currentPoint.calcLinks();
             switch (currentPoint.getTileType()) {
-
                 case EMPTY:
                     break;
                 case VERTICAL:
@@ -229,13 +229,13 @@ public class PolygonsWorld {
     private void addLeft(Map.Entry<LightPoint, Point> entry) {
         LightPoint key = entry.getKey();
         Point value = entry.getValue();
-        value.createLink(allPoints.get(new LightPoint(key.x -1, key.y)));
+        value.createLink(allPoints.get(new LightPoint(key.x - 1, key.y)));
     }
 
     private void addRight(Map.Entry<LightPoint, Point> entry) {
         LightPoint key = entry.getKey();
         Point value = entry.getValue();
-        value.createLink(allPoints.get(new LightPoint(key.x +1, key.y)));
+        value.createLink(allPoints.get(new LightPoint(key.x + 1, key.y)));
     }
 
     private double getVFromTile(int value) {
@@ -324,5 +324,14 @@ public class PolygonsWorld {
 
     public Move getMove() {
         return move;
+    }
+
+    public boolean inSameTile(Point point, Point point1) {
+        int trackTileSize = (int) game.getTrackTileSize();
+        return point.x / trackTileSize == point1.x / trackTileSize && point.y / trackTileSize == point1.y / trackTileSize;
+    }
+
+    public Map<LightPoint, Point> getAllPoints() {
+        return allPoints;
     }
 }

@@ -50,9 +50,7 @@ public class AStarPathCalcer implements PathCalcer {
         calcF(startNode);
         openNodes.add(startNode);
 
-        Node peek = openNodes.peek();
-        Point position = peek.getPosition();
-        while (!openNodes.peek().getPosition().equals(goalPosition) && !(peek.getParentsCount() > MAX_LENGTH_PATH)) {
+        while (!openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
             //  System.out.println("openNodes count: " + openNodes.size());
             Node current = openNodes.peek();
             openNodes.remove(current);
@@ -248,7 +246,7 @@ public class AStarPathCalcer implements PathCalcer {
 
         @Override
         public String toString() {
-            return "f: " + getF() + "; g: " + getG() + "; h: " + getH() + "; pos: " + getPosition();
+            return "f: " +String.format("%.2f", getF())  + "; g: " + String.format("%.2f", getG()) + "; h: " + getH() + "; pos: " + getPosition();
         }
 
         public void recalcF() {

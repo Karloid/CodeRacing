@@ -323,7 +323,7 @@ public final class MyStrategy implements Strategy {
 
     @SuppressWarnings("ConstantConditions")
     private void findNextXY() {
-        pointTileOffset = game.getTrackTileMargin() + game.getCarHeight();
+       /* pointTileOffset = game.getTrackTileMargin() + game.getCarHeight();
 
         tilesPoints = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
@@ -347,9 +347,11 @@ public final class MyStrategy implements Strategy {
             if (result == null || entry.getValue() < result.getValue()) {
                 result = entry;
             }
-        }
-        nextX = result.getKey().getX();
-        nextY = result.getKey().getY();
+        }*/
+        ArrayList<Point> path = polygonWorld.getPathCalcer().getPath();
+        Point nextPoint = path.get(2);
+        nextX = nextPoint.x;
+        nextY = nextPoint.y;
     }
 
     private double getMinDistance(FPoint startPoint, int level, double sum) {
@@ -560,6 +562,13 @@ public final class MyStrategy implements Strategy {
                 Point second = iterator.next();
                 drawLine(first, second);
             }
+
+            int i = 0;
+            for (Point point : polygonWorld.getPathCalcer().getPath()) {
+                g2.setColor(i == 0 ? Color.red : i == 1 ? Color.cyan : Color.blue);
+                g2.fillOval(dSize(point.x) - 5, dSize(point.y) - 5, 10, 10);
+                i++;
+            }
         }
 
         private void drawLine(Point first, Point second) {
@@ -611,6 +620,9 @@ public final class MyStrategy implements Strategy {
 
         private void drawFPoints() {
             g2.setColor(new Color(0xE2FF55));
+            if (tilesPoints == null) {
+                return;
+            }
             for (FPoint[] points : tilesPoints) {
                 for (FPoint point : points) {
                     size = 5;

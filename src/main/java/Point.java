@@ -17,7 +17,7 @@ public class Point {
     private HashSet<Link> links;
     private PolygonsWorld context;
     private Obstacle obstacle;
-    private TileType tileType;
+    private int tileType;
 
     public Point(int x, int y, PolygonsWorld context) {
         setX(x);
@@ -66,8 +66,10 @@ public class Point {
     }
 
     private void checkAllPoints() {
-        for (Point point : context.getAllPoints().values()) {
-            addLinkToIfCan2(point);
+        for (List<Point> points : context.getAllPoints().values()) {
+            for (Point point : points) {
+                addLinkToIfCan2(point);
+            }
         }
     }
 
@@ -248,11 +250,7 @@ public class Point {
         return links;
     }
 
-    public void setTileType(TileType tileType) {
-        this.tileType = tileType;
-    }
-
-    public TileType getTileType() {
+    public int getTileType() {
         return tileType;
     }
 }

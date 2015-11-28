@@ -1,3 +1,5 @@
+import model.TileType;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class Point {
     private HashSet<Link> links;
     private PolygonsWorld context;
     private Obstacle obstacle;
+    private TileType tileType;
 
     public Point(int x, int y, PolygonsWorld context) {
         setX(x);
@@ -22,6 +25,10 @@ public class Point {
         id = maxId;
         maxId++;
         setContext(context);
+    }
+
+    public Point(double x, double y, PolygonsWorld context) {
+        this((int) x, (int) y, context);
     }
 
     public void setX(int x) {
@@ -54,13 +61,13 @@ public class Point {
             addLinkToIfCan(context.getEndPoint());
             addLinkToIfCan(context.getStartPoint());
         }
-        for (Obstacle obstacle : getContext().getObstacles()) {
+/*        for (Obstacle obstacle : getContext().getObstacles()) {
             for (Point point : obstacle.getPoints()) {
                 if (point != this) {
                     addLinkToIfCan(point);
                 }
             }
-        }
+        }*/
 
     }
 
@@ -156,7 +163,11 @@ public class Point {
         }
     }
 
-    private void createLink(Point pointGoal) {
+    public void createLink(Point pointGoal) {
+        if (pointGoal == null) return;
+        if (links == null) {
+            links = new HashSet<Link>();
+        }
         Link link = context.getLink(this, pointGoal);
         if (link == null) {
             link = new Link(this, pointGoal);
@@ -227,5 +238,13 @@ public class Point {
 
     public HashSet<Link> getLinks() {
         return links;
+    }
+
+    public void setTileType(TileType tileType) {
+        this.tileType = tileType;
+    }
+
+    public TileType getTileType() {
+        return tileType;
     }
 }

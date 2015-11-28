@@ -1,6 +1,6 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import model.*;
+
+import java.util.*;
 
 public class PolygonsWorld {
     private MyStrategy myStrategy;
@@ -12,6 +12,11 @@ public class PolygonsWorld {
     private Point startPoint;
     private Point endPoint;
     private HashSet<Link> allLinks;
+    private Car self;
+    private World world;
+    private Game game;
+    private Move move;
+    private Map<LightPoint, Point> allPoints;
 
     public PolygonsWorld(MyStrategy myStrategy, int width, int height) {
         this.myStrategy = myStrategy;
@@ -126,20 +131,137 @@ public class PolygonsWorld {
     }
 
     public void calcViewGraph() {
-        if (startPoint == null || endPoint == null) {
-            return;
-        }
+        startPoint = new Point(self.getX(), self.getY(), this);
+        double trackTileSize = game.getTrackTileSize();
+        endPoint = new Point(getVFromTile(self.getNextWaypointX()), getVFromTile(self.getNextWaypointY()), this);
+
+        addAllPoints();
+
         setAllLinks(new HashSet<Link>());
+
+        calcLinksForPoints();
 
         startPoint.calcLinks();
         endPoint.calcLinks();
-        for (Obstacle obstacle : obstacles) {
+   /*     for (Obstacle obstacle : obstacles) {
             for (Point point : obstacle.getPoints()) {
                 point.calcLinks();
             }
-        }
+        }*/
         System.out.println("done calc view graph " + " links in graph: " + getAllLinks().size());
         calcPath();
+    }
+
+    private void calcLinksForPoints() {
+        for (Map.Entry<LightPoint, Point> entry : allPoints.entrySet()) {
+            Point currentPoint = entry.getValue();
+            switch (currentPoint.getTileType()) {
+
+                case EMPTY:
+                    break;
+                case VERTICAL:
+                    addTop(entry);
+                    addBottom(entry);
+                    break;
+                case HORIZONTAL:
+                    addLeft(entry);
+                    addRight(entry);
+                    break;
+                case LEFT_TOP_CORNER:
+                    addRight(entry);
+                    addBottom(entry);
+                    break;
+                case RIGHT_TOP_CORNER:
+                    addLeft(entry);
+                    addBottom(entry);
+                    break;
+                case LEFT_BOTTOM_CORNER:
+                    addRight(entry);
+                    addTop(entry);
+                    break;
+                case RIGHT_BOTTOM_CORNER:
+                    addLeft(entry);
+                    addTop(entry);
+                    break;
+                case LEFT_HEADED_T:
+                    addRight(entry);
+                    addTop(entry);
+                    addBottom(entry);
+                    break;
+                case RIGHT_HEADED_T:
+                    addLeft(entry);
+                    addTop(entry);
+                    addBottom(entry);
+                    break;
+                case TOP_HEADED_T:
+                    addLeft(entry);
+                    addRight(entry);
+                    addBottom(entry);
+                    break;
+                case BOTTOM_HEADED_T:
+                    addLeft(entry);
+                    addRight(entry);
+                    addTop(entry);
+                    break;
+                case CROSSROADS:
+                case UNKNOWN:
+                    addLeft(entry);
+                    addRight(entry);
+                    addTop(entry);
+                    addBottom(entry);
+                    break;
+            }
+        }
+    }
+
+    private void addTop(Map.Entry<LightPoint, Point> entry) {
+        LightPoint key = entry.getKey();
+        Point value = entry.getValue();
+        value.createLink(allPoints.get(new LightPoint(key.x, key.y - 1)));
+    }
+
+    private void addBottom(Map.Entry<LightPoint, Point> entry) {
+        LightPoint key = entry.getKey();
+        Point value = entry.getValue();
+        value.createLink(allPoints.get(new LightPoint(key.x, key.y + 1)));
+    }
+
+    private void addLeft(Map.Entry<LightPoint, Point> entry) {
+        LightPoint key = entry.getKey();
+        Point value = entry.getValue();
+        value.createLink(allPoints.get(new LightPoint(key.x -1, key.y)));
+    }
+
+    private void addRight(Map.Entry<LightPoint, Point> entry) {
+        LightPoint key = entry.getKey();
+        Point value = entry.getValue();
+        value.createLink(allPoints.get(new LightPoint(key.x +1, key.y)));
+    }
+
+    private double getVFromTile(int value) {
+        return value * game.getTrackTileSize() + game.getTrackTileSize() / 2;
+    }
+
+
+    private void addAllPoints() {
+        allPoints = new HashMap<>();
+        int x = 0;
+        for (TileType[] tileTypes : world.getTilesXY()) {
+            int y = 0;
+            for (TileType tileType : tileTypes) {
+                if (!tileType.equals(TileType.EMPTY)) {
+                    Point point = new Point(getVFromTile(x), getVFromTile(y), this);
+                    point.setTileType(tileType);
+                    allPoints.put(new LightPoint(x, y), point);
+                }
+                y++;
+            }
+            x++;
+        }
+    }
+
+    private int dSize(int v) {
+        return (int) (v * game.getTrackTileSize());
     }
 
     private void calcPath() {
@@ -175,5 +297,32 @@ public class PolygonsWorld {
     public void cleanPathCalcer() {
         pathCalcer = new AStarPathCalcer();
         pathCalcer.setContext(this);
+    }
+
+    public void setup(Car self, World world, Game game, Move move) {
+        this.self = self;
+        this.world = world;
+        this.game = game;
+        this.move = move;
+    }
+
+    public MyStrategy getMyStrategy() {
+        return myStrategy;
+    }
+
+    public Car getSelf() {
+        return self;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public Move getMove() {
+        return move;
     }
 }

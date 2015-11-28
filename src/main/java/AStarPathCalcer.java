@@ -49,8 +49,10 @@ public class AStarPathCalcer implements PathCalcer {
         startNode = new Node(context.getStartPoint());
         calcF(startNode);
         openNodes.add(startNode);
-        while (!openNodes.peek().getPosition().equals(goalPosition)
-                && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
+
+        Node peek = openNodes.peek();
+        Point position = peek.getPosition();
+        while (!openNodes.peek().getPosition().equals(goalPosition) && !(peek.getParentsCount() > MAX_LENGTH_PATH)) {
             //  System.out.println("openNodes count: " + openNodes.size());
             Node current = openNodes.peek();
             openNodes.remove(current);
@@ -97,8 +99,9 @@ public class AStarPathCalcer implements PathCalcer {
 
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<Node>();
-        for (Link link : node.getPosition().getLinks()) {
-            Point pointFromLink = link.getAnotherPoint(node.getPosition());
+        Point position = node.getPosition();
+        for (Link link : position.getLinks()) {
+            Point pointFromLink = link.getAnotherPoint(position);
             Node newNode = new Node(pointFromLink);
             newNode.setParent(newNode);
             calcF(newNode);

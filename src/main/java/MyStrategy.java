@@ -84,8 +84,9 @@ public final class MyStrategy implements Strategy {
 
     private void initAStar() {
         if (polygonWorld == null) {
-            polygonWorld = new PolygonsWorld(this, 30, 20);
+            polygonWorld = new PolygonsWorld(this, (int) (world.getWidth() * game.getTrackTileSize()), (int) (world.getHeight() * game.getTrackTileSize()));
         }
+        polygonWorld.setup(self, world, game, move);
         polygonWorld.setStartPoint(new Point(0, 0, polygonWorld));
         polygonWorld.setEndPoint(new Point(5, 5, polygonWorld));
         polygonWorld.calcViewGraph();
@@ -119,52 +120,27 @@ public final class MyStrategy implements Strategy {
     }
 
     private void findCurrentWaypoint() {
-        if (haveWaypoints()) {
 
+        MyTile currentWaypoint = getWaypoints().get(this.curWaypointInd);
 
-            MyTile currentWaypoint = getWaypoints().get(this.curWaypointInd);
-
-            int previousInd = this.curWaypointInd - 1;
-            if (previousInd < 0) {
-                previousInd = getWaypoints().size() - 1;
-            }
-            MyTile previousTile = getWaypoints().get(previousInd);
-
-            if (getCurTileX() == currentWaypoint.x && getCurTileY() == currentWaypoint.y) {
-                lastWaypoint = currentWaypoint;
-                lastWaypointInd = curWaypointInd;
-                this.curWaypointInd++;
-                if (this.curWaypointInd >= getWaypoints().size()) {
-                    this.curWaypointInd = 0;
-                }
-
-
-            } else if (lastWaypoint != null && (getCurTileX() != lastWaypoint.x || getCurTileY() != lastWaypoint.y)) {
-                this.curWaypointInd = lastWaypointInd;
-            }
-        } else {
-            boolean find = false;
-            int realNextX = getNextWaypointX();
-            int realNextY = getNextWaypointY();
-            for (; curWaypointInd < getWaypoints().size(); curWaypointInd++) {
-                MyTile xy = getWaypoints().get(curWaypointInd);
-                if (xy.x == realNextX && xy.y == realNextY) {
-                    find = true;
-                    break;
-                }
-            }
-            if (!find) {
-                curWaypointInd = 0;
-                MyTile xy = getWaypoints().get(curWaypointInd);
-                if (xy.x != realNextX || xy.y != realNextY) {
-                    log("SUPER ERROR: Incorrect waypoint index");
-                }
-            }
+        int previousInd = this.curWaypointInd - 1;
+        if (previousInd < 0) {
+            previousInd = getWaypoints().size() - 1;
         }
-    }
+        MyTile previousTile = getWaypoints().get(previousInd);
 
-    private boolean haveWaypoints() {
-        return isMap(MAP_DEFAULT) || isMap(MAP_01) || isMap(MAP_07) || isMap(MAP_08) || isMap(MAP_09) || isMap(MAP_02) || isMap(MAP_03) || isMap04() || isMap05() || isMap(MAP_06);
+        if (getCurTileX() == currentWaypoint.x && getCurTileY() == currentWaypoint.y) {
+            lastWaypoint = currentWaypoint;
+            lastWaypointInd = curWaypointInd;
+            this.curWaypointInd++;
+            if (this.curWaypointInd >= getWaypoints().size()) {
+                this.curWaypointInd = 0;
+            }
+
+
+        } else if (lastWaypoint != null && (getCurTileX() != lastWaypoint.x || getCurTileY() != lastWaypoint.y)) {
+            this.curWaypointInd = lastWaypointInd;
+        }
     }
 
     private int getCurTileY() {
@@ -193,17 +169,10 @@ public final class MyStrategy implements Strategy {
         //return waypoints;
     }
 
-    private boolean isMap05() {
-        return isMap(MAP_05);
-    }
-
     private boolean isMap(String mapName) {
         return world.getMapName().equals(mapName);
     }
 
-    private boolean isMap04() {
-        return isMap(MAP_04);
-    }
 
     private String f(double v) {
         return String.format("%.2f", v);
@@ -257,7 +226,7 @@ public final class MyStrategy implements Strategy {
         boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
         if (slowTile) log("is slowTile!");
 
-        return (angleStuff || tooFast || tooFastCorner || slowTile) && (!haveWaypoints() || !isNitroTitle());
+        return (angleStuff || tooFast || tooFastCorner || slowTile) && (false || !isNitroTitle());
     }
 
     private boolean isSlowTile() {
@@ -294,10 +263,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isTimeForNitro() { //TODO
-        if (haveWaypoints()) {
-            return abs(angleToWaypoint) < 0.15f && isNitroTitle() && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
-        }
-        return abs(angleToWaypoint) < 0.1f && (distanceToWaypoint > game.getTrackTileSize() * 3 || curWaypointInd == 0) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+        return abs(angleToWaypoint) < 0.15f && isNitroTitle() && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
     private void doWheelTurn() {
@@ -585,20 +551,19 @@ public final class MyStrategy implements Strategy {
         }
 
         private void drawAStar() {
-            log("drawAStar");
             g2.setColor(new Color(0xDD6C73));
             drawLine(polygonWorld.getStartPoint(), polygonWorld.getEndPoint());
             for (Link link : polygonWorld.getAllLinks()) {
-                g2.setColor(Color.BLUE);
-                Point first = link.getPoints().iterator().next();
-                Point second = link.getPoints().iterator().next();
+                g2.setColor(new Color(0x7F75DD));
+                Iterator<Point> iterator = link.getPoints().iterator();
+                Point first = iterator.next();
+                Point second = iterator.next();
                 drawLine(first, second);
             }
         }
 
         private void drawLine(Point first, Point second) {
-            log("drawLine: ");
-            g2.drawLine(dSizeW(first.x), dSizeW(first.y), dSizeW(second.x), dSizeW(second.y));
+            g2.drawLine(dSize(first.x), dSize(first.y), dSize(second.x), dSize(second.y));
         }
 
         private void drawTexts() {

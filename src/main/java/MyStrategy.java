@@ -352,14 +352,17 @@ public final class MyStrategy implements Strategy {
         log("path length: " + path.size());
 
 
-        for (int i = 2 + 2; i < path.size(); i++) {
+        for (int i = 2 + 0; i < path.size(); i++) {
             Point point2 = path.get(i - 2);
             Point point1 = path.get(i - 1);
             Point point0 = path.get(i);
-            if ((point2.x - point1.x == 0 && point1.x - point0.x == 0) || (point2.y - point1.y == 0 && point1.y - point0.y == 0)) {
-
-            } else {
+            int deltaX = point1.x - point0.x;
+            int deltaY = point1.y - point0.y;
+            if ((point2.x - point1.x != 0 || deltaX != 0) && (point2.y - point1.y != 0 || deltaY != 0)) {
                 log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
+
+                point1.x = (point1.x + point0.x + point2.x) / 3;
+                point1.y = (point1.y + point0.y + point2.y) / 3;
             }
         }
         nextX = nextPoint.x;

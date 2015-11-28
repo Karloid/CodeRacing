@@ -219,13 +219,13 @@ public final class MyStrategy implements Strategy {
         float maxSpeed = MAX_SPEED * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
         float maxSpeedOnCorner = 13 * carefulCof;
-        boolean tooFastCorner = speedModule > maxSpeedOnCorner &&  abs(angleToWaypoint) > 0.2f;
-        if (tooFastCorner) log("TOO fast for corner!");
+        boolean tooFastCorner = speedModule > maxSpeedOnCorner && (abs(angleToWaypoint) > 0.25f ||
+                (path.size() > 3 && self.getAngleTo(path.get(3).x, path.get(3).y) > 0.25f));
 
         boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
         if (slowTile) log("is slowTile!");
 
-        return (angleStuff || tooFast || tooFastCorner || slowTile) && (false || !isNitroTitle());
+        return (angleStuff || tooFast || tooFastCorner || slowTile) && (getMoveBackWardDelta() > TICKS_COUNT_FOR_DISTANCE);
     }
 
     private boolean isSlowTile() {
@@ -262,7 +262,7 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isTimeForNitro() { //TODO
-        return path.size() > 5 && isCorrectAngle(path.get(2)) && isCorrectAngle(path.get(3)) && isCorrectAngle(path.get(4)) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+        return path.size() > 6 && isCorrectAngle(path.get(2)) && isCorrectAngle(path.get(3)) && isCorrectAngle(path.get(4)) && isCorrectAngle(path.get(4)) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
     private boolean isCorrectAngle(Point point) {
@@ -347,6 +347,9 @@ public final class MyStrategy implements Strategy {
             }
             int newX = (point1.x + point0.x + point2.x) / 3;
             int newY = (point1.y + point0.y + point2.y) / 3;
+            point1.x = (point1.x + newX) / 2;
+            point1.y = (point1.y + newY) / 2;
+
             point1.x = (point1.x + newX) / 2;
             point1.y = (point1.y + newY) / 2;
         }

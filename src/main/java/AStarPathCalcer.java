@@ -135,7 +135,7 @@ public class AStarPathCalcer implements PathCalcer {
         double heuristik = getEuclideDistance(node.getPosition(), goalPosition);
 
         double angleTo = Math.abs(context.getSelf().getAngleTo(node.getPosition().x, node.getPosition().y));
-        heuristik -= angleTo * 100;
+        heuristik += angleTo * 100;
         ;
   /*       Node parent = node.getParent();
        if (parent != null && parent.getParent() != null) {

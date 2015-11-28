@@ -187,15 +187,16 @@ public final class MyStrategy implements Strategy {
 
         if (isBrakeNeed()) {
             move.setBrake(true);
+            if (self.getOilCanisterCount() > 0 && notLast()) {
+                move.setSpillOil(true);
+                log("use oil!!1");
+            }
         } else if (isTimeForNitro()) {
             move.setUseNitro(true);
             log("!!! use nitro!");
         }
 
-        if (distanceToWaypoint < game.getTrackTileSize() / 1.5f && isCorner(curWaypointInd) && self.getOilCanisterCount() > 0 && notLast()) {
-            move.setSpillOil(true);
-            log("use oil!!1");
-        }
+
         for (Car car : world.getCars()) {
             if (!car.isTeammate() && car.getDurability() > 0d && self.getDistanceTo(car) < game.getTrackTileSize() * 1.5f && abs(self.getAngleTo(car)) < 0.1f && self.getProjectileCount() > 0) {
                 move.setThrowProjectile(true);
@@ -218,12 +219,14 @@ public final class MyStrategy implements Strategy {
         float carefulCof = self.getDurability() < 0.15d ? 0.8f : 1f;
         float maxSpeed = MAX_SPEED * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
-        float maxSpeedOnCorner = 13 * carefulCof;
-        boolean tooFastCorner = speedModule > maxSpeedOnCorner && (abs(angleToWaypoint) > 0.25f ||
-                (path.size() > 3 && self.getAngleTo(path.get(3).x, path.get(3).y) > 0.25f));
+        boolean isNitroTime = self.getEnginePower() > 1.4;
+        float maxSpeedOnCorner = 17 * carefulCof * (isNitroTime ? 1.5f : 1f);
+        boolean tooFastCorner = (speedModule > maxSpeedOnCorner) && (
+                ((path.size() > 3) && (Math.abs(self.getAngleTo(path.get(2).x, path.get(2).y) + self.getAngleTo(path.get(1).x, path.get(1).y)) > 0.35f)));
 
         boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
         if (slowTile) log("is slowTile!");
+
 
         return (angleStuff || tooFast || tooFastCorner || slowTile) && (getMoveBackWardDelta() > TICKS_COUNT_FOR_DISTANCE);
     }
@@ -333,18 +336,18 @@ public final class MyStrategy implements Strategy {
         log("path length: " + path.size());
 
 
-        for (int i = 2 + 0; i < 2 + 3; i++) {
+        for (int i = 2 + 0; i < 3 + 1; i++) {
             Point point2 = path.get(i - 2);
             Point point1 = path.get(i - 1);
             Point point0 = path.get(i);
             int deltaX = point1.x - point0.x;
             int deltaY = point1.y - point0.y;
+            boolean isAngle = false;
             if ((point2.x - point1.x != 0 || deltaX != 0) && (point2.y - point1.y != 0 || deltaY != 0)) {
                 log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
-
-              /*  point1.x = (point1.x + point0.x + point2.x) / 3;
-                point1.y = (point1.y + point0.y + point2.y) / 3;*/
+                isAngle = true;
             }
+
             int newX = (point1.x + point0.x + point2.x) / 3;
             int newY = (point1.y + point0.y + point2.y) / 3;
             point1.x = (point1.x + newX) / 2;
@@ -352,6 +355,21 @@ public final class MyStrategy implements Strategy {
 
             point1.x = (point1.x + newX) / 2;
             point1.y = (point1.y + newY) / 2;
+
+            int tmpX = (point0.x + point2.x) / 2;
+            int tmpY = (point0.y + point2.y) / 2;
+
+            deltaX = point1.x - tmpX;
+            deltaY = point1.y - tmpY;
+
+            if (isAngle) {
+                point2.x += deltaX * 0.7f;
+                point2.y += deltaY * 0.7f;
+            }
+
+            //   point2.x += deltaX;
+            //   point2.y += deltaY;
+
         }
         nextX = nextPoint.x;
         nextY = nextPoint.y;

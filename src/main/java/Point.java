@@ -53,15 +53,13 @@ public class Point {
 
     public void calcLinks() {
         links = new HashSet<>();
-        if (this == context.getStartPoint()) {
-            addLinkToIfCan2(context.getEndPoint());
-            checkAllPoints();
-        } else if (this == context.getEndPoint()) {
-            addLinkToIfCan2(context.getStartPoint());
-            checkAllPoints();
-        } else {
-            addLinkToIfCan2(context.getEndPoint());
-            addLinkToIfCan2(context.getStartPoint());
+        checkAllPoints();
+        checkWaypoints();
+    }
+
+    private void checkWaypoints() {
+        for (Point point : context.getWaypoints()) {
+            addLinkToIfCan2(point);
         }
     }
 
@@ -74,7 +72,7 @@ public class Point {
     }
 
     private void addLinkToIfCan2(Point point) {
-        if (context.inSameTile(this, point)) {
+        if (point != this && context.inSameTile(this, point)) {
             createLink(point);
         }
     }

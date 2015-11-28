@@ -17,6 +17,14 @@ public class PolygonsWorld {
     private Game game;
     private Move move;
     private Map<LightPoint, List<Point>> allPoints;
+    private Point userPoint;
+
+    public List<Point> getWaypoints() {
+        return waypoints;
+    }
+
+    private List<Point> waypoints;
+    private List<Point> resultPath;
 
     public PolygonsWorld(MyStrategy myStrategy, int width, int height) {
         this.myStrategy = myStrategy;
@@ -130,26 +138,59 @@ public class PolygonsWorld {
         }
     }
 
-    public void calcViewGraph() {
-        startPoint = new Point(self.getX(), self.getY(), this);
-        double trackTileSize = game.getTrackTileSize();
-        endPoint = new Point(getVFromTile(self.getNextWaypointX()), getVFromTile(self.getNextWaypointY()), this);
+    public List<Point> getResultPath() {
+        return resultPath;
+    }
 
+    public void calcViewGraph() {
+
+        userPoint = new Point(self.getX(), self.getY(), this);
+        startPoint = userPoint;
+
+        waypoints = new ArrayList<>();
+
+        for (int[] ints : world.getWaypoints()) {
+            Point newPoint = new Point(getVFromTile(ints[0]), getVFromTile(ints[1]), this);
+            waypoints.add(newPoint);
+
+        }
         addAllPoints();
 
         setAllLinks(new HashSet<Link>());
 
         calcLinksForPoints();
 
+        for (Point waypoint : waypoints) {
+            waypoint.calcLinks();
+        }
+
         startPoint.calcLinks();
-        endPoint.calcLinks();
-   /*     for (Obstacle obstacle : obstacles) {
-            for (Point point : obstacle.getPoints()) {
-                point.calcLinks();
+
+        int nextWaypointIndex = self.getNextWaypointIndex();
+        resultPath = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            if (i == 0) {
+                startPoint = userPoint;
+            } else {
+                startPoint = waypoints.get(appendIndex(nextWaypointIndex, -1));
             }
-        }*/
-      //  System.out.println("done calc view graph " + " links in graph: " + getAllLinks().size());
-        calcPath();
+            endPoint = waypoints.get(nextWaypointIndex);
+
+            calcPath();
+
+            resultPath.addAll(getPathCalcer().getPath());
+            nextWaypointIndex = appendIndex(nextWaypointIndex, 1);
+        }
+    }
+
+    private int appendIndex(int nextWaypointIndex, int i) {
+        int result = nextWaypointIndex + i;
+        if (result >= world.getWaypoints().length) {
+            return 0;
+        } else if (result < 0) {
+            return world.getWaypoints().length -1;
+        }
+        return result;
     }
 
     private void calcLinksForPoints() {
@@ -260,7 +301,7 @@ public class PolygonsWorld {
 
     private void addAllPoints() {
 
-        double pointTileOffset = game.getTrackTileMargin() + game.getCarWidth() /2;
+        double pointTileOffset = game.getTrackTileMargin() + game.getCarWidth() / 2;
 
         allPoints = new HashMap<>();
         int x = 0;
@@ -281,15 +322,15 @@ public class PolygonsWorld {
                     int mediumY = topY + (botY - topY) / 2;
 
                     List<Point> points = new ArrayList<>(9);
-                 //   points.add(new Point(topX, topY, this));
-                 //   points.add(new Point(botX, topY, this));
-                  //  points.add(new Point(botX, botY, this));
-                 //   points.add(new Point(topX, botY, this));
+                    //   points.add(new Point(topX, topY, this));
+                    //   points.add(new Point(botX, topY, this));
+                    //  points.add(new Point(botX, botY, this));
+                    //   points.add(new Point(topX, botY, this));
                     points.add(new Point(mediumX, mediumY, this));
-                 //   points.add(new Point(botX, mediumY, this));
-                 //   points.add(new Point(topX, mediumY, this));
-                //    points.add(new Point(mediumX, botY, this));
-                //    points.add(new Point(mediumX, topY, this));
+                    //   points.add(new Point(botX, mediumY, this));
+                    //   points.add(new Point(topX, mediumY, this));
+                    //    points.add(new Point(mediumX, botY, this));
+                    //    points.add(new Point(mediumX, topY, this));
 
                     LightPoint key = new LightPoint(x, y);
                     key.setTileType(tileType);

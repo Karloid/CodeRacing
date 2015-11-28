@@ -1,4 +1,5 @@
 import model.*;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 
@@ -346,10 +347,22 @@ public final class MyStrategy implements Strategy {
                 result = entry;
             }
         }*/
-        ArrayList<Point> path = polygonWorld.getPathCalcer().getPath();
+        List<Point> path = polygonWorld.getResultPath();
         Point nextPoint = path.get(2);
+        log("path length: " + path.size());
+
+
+        for (int i = 2 + 2; i < path.size(); i++) {
+            Point point2 = path.get(i - 2);
+            Point point1 = path.get(i - 1);
+            Point point0 = path.get(i);
+            if ((point2.x - point1.x != 0 && point1.x - point0.x != 0) && (point2.y - point1.y != 0 && point1.y - point0.y != 0)) {
+                log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
+            }
+        }
         nextX = nextPoint.x;
         nextY = nextPoint.y;
+
     }
 
     private double getMinDistance(FPoint startPoint, int level, double sum) {
@@ -562,8 +575,8 @@ public final class MyStrategy implements Strategy {
             }
 
             int i = 0;
-            Point prevPoint =null;
-            for (Point point : polygonWorld.getPathCalcer().getPath()) {
+            Point prevPoint = null;
+            for (Point point : polygonWorld.getResultPath()) {
                 g2.setColor(i == 0 ? Color.red : i == 1 ? Color.cyan : Color.blue);
                 g2.fillOval(dSize(point.x) - 5, dSize(point.y) - 5, 10, 10);
                 i++;
@@ -765,6 +778,14 @@ public final class MyStrategy implements Strategy {
 
         public FPoint(int curWaypointInd) {
             this(getWaypoints().get(curWaypointInd).x * game.getTrackTileSize(), getWaypoints().get(curWaypointInd).y * game.getTrackTileSize());
+        }
+
+        public FPoint(Point point) {
+            super(0, 0, point.x, point.y, 0, 0, 0, 0);
+        }
+
+        public FPoint(Point point, double angleToPoint_1) {
+            super(0, 0, point.x, point.y, 0, 0, angleToPoint_1, 0);
         }
 
         @Override

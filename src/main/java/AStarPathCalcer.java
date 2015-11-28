@@ -94,7 +94,7 @@ public class AStarPathCalcer implements PathCalcer {
                 break;
             }
         }
-        System.out.println(" A* length = " + length);
+      //  System.out.println(" A* length = " + length);
         Collections.reverse(path);
     }
 

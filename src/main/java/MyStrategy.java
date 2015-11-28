@@ -25,7 +25,7 @@ public final class MyStrategy implements Strategy {
     private static final String MAP_DEFAULT = "default";
     private static final String MAP_06 = "map06";
     public static final String MAP_05 = "map05";
-    public static final int MAX_SPEED = 32;
+    public static final int MAX_SPEED = 99;
     private static final String MAP_07 = "map07";
     private static final String MAP_08 = "map08";
     private static final String MAP_09 = "map09";
@@ -329,7 +329,7 @@ public final class MyStrategy implements Strategy {
 
         path = polygonWorld.getResultPath();
         if (path == null || path.size() < 3) return;
-        Point nextPoint = path.get(2);
+        Point nextPoint = path.get(1);
         log("path length: " + path.size());
 
 
@@ -588,6 +588,7 @@ public final class MyStrategy implements Strategy {
             g2.drawString("speed: " + f(speedModule), stringPadding, sidePadding / 2);
             g2.drawString("max_speed: " + f(MAX_SPEED), stringPadding * 5, sidePadding / 2);
             g2.drawString("enigePower: " + f(self.getEnginePower()), stringPadding * 10, sidePadding / 2);
+            g2.drawString("BRAKE: " + move.isBrake(), stringPadding * 15, sidePadding / 2);
             //  g2.drawString("angle: " + f(angleToWaypoint), stringPadding * 10, sidePadding/2);
         }
 
@@ -736,7 +737,11 @@ public final class MyStrategy implements Strategy {
             for (Car car : world.getCars()) {
                 Graphics2D gg = (Graphics2D) g2.create();
 
-                gg.setColor(car.getPlayerId() == world.getMyPlayer().getId() ? Color.green : Color.red);
+                boolean isMyCar = car.getPlayerId() == world.getMyPlayer().getId();
+                gg.setColor(isMyCar ? Color.green : Color.red);
+                if (isMyCar && move.isBrake()) {
+                    gg.setColor(new Color(0xFF54BF));
+                }
                 int x = (int) (dSize(car.getX()));
                 int y = (int) (dSize(car.getY()));
 

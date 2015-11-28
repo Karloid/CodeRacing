@@ -164,7 +164,11 @@ public class PolygonsWorld {
             waypoint.calcLinks();
         }*/
 
-        startPoint.calcLinks();
+        int x = (int) (startPoint.x / game.getTrackTileSize());
+        int y = (int) (startPoint.y / game.getTrackTileSize());
+        LightPoint key = new LightPoint(x, y);
+        key.setTileType(world.getTilesXY()[x][y]);
+        addLinks(key, startPoint);
 
         int nextWaypointIndex = self.getNextWaypointIndex();
         resultPath = new ArrayList<>();
@@ -210,64 +214,68 @@ public class PolygonsWorld {
             LightPoint key = entry.getKey();
             List<Point> points = entry.getValue();
             for (Point point : points) {
-                point.calcLinks();
-                switch (key.getTileType()) {
-                    case EMPTY:
-                        break;
-                    case VERTICAL:
-                        addTop(key, point);
-                        addBottom(key, point);
-                        break;
-                    case HORIZONTAL:
-                        addLeft(key, point);
-                        addRight(key, point);
-                        break;
-                    case LEFT_TOP_CORNER:
-                        addRight(key, point);
-                        addBottom(key, point);
-                        break;
-                    case RIGHT_TOP_CORNER:
-                        addLeft(key, point);
-                        addBottom(key, point);
-                        break;
-                    case LEFT_BOTTOM_CORNER:
-                        addRight(key, point);
-                        addTop(key, point);
-                        break;
-                    case RIGHT_BOTTOM_CORNER:
-                        addLeft(key, point);
-                        addTop(key, point);
-                        break;
-                    case RIGHT_HEADED_T:
-                        addRight(key, point);
-                        addTop(key, point);
-                        addBottom(key, point);
-                        break;
-                    case LEFT_HEADED_T:
-                        addLeft(key, point);
-                        addTop(key, point);
-                        addBottom(key, point);
-                        break;
-                    case TOP_HEADED_T:
-                        addLeft(key, point);
-                        addRight(key, point);
-                        addTop(key, point);
-                        break;
-                    case BOTTOM_HEADED_T:
-                        addLeft(key, point);
-                        addRight(key, point);
-                        addBottom(key, point);
-
-                        break;
-                    case CROSSROADS:
-                    case UNKNOWN:
-                        addLeft(key, point);
-                        addRight(key, point);
-                        addTop(key, point);
-                        addBottom(key, point);
-                        break;
-                }
+                addLinks(key, point);
             }
+        }
+    }
+
+    private void addLinks(LightPoint key, Point point) {
+        point.calcLinks();
+        switch (key.getTileType()) {
+            case EMPTY:
+                break;
+            case VERTICAL:
+                addTop(key, point);
+                addBottom(key, point);
+                break;
+            case HORIZONTAL:
+                addLeft(key, point);
+                addRight(key, point);
+                break;
+            case LEFT_TOP_CORNER:
+                addRight(key, point);
+                addBottom(key, point);
+                break;
+            case RIGHT_TOP_CORNER:
+                addLeft(key, point);
+                addBottom(key, point);
+                break;
+            case LEFT_BOTTOM_CORNER:
+                addRight(key, point);
+                addTop(key, point);
+                break;
+            case RIGHT_BOTTOM_CORNER:
+                addLeft(key, point);
+                addTop(key, point);
+                break;
+            case RIGHT_HEADED_T:
+                addRight(key, point);
+                addTop(key, point);
+                addBottom(key, point);
+                break;
+            case LEFT_HEADED_T:
+                addLeft(key, point);
+                addTop(key, point);
+                addBottom(key, point);
+                break;
+            case TOP_HEADED_T:
+                addLeft(key, point);
+                addRight(key, point);
+                addTop(key, point);
+                break;
+            case BOTTOM_HEADED_T:
+                addLeft(key, point);
+                addRight(key, point);
+                addBottom(key, point);
+
+                break;
+            case CROSSROADS:
+            case UNKNOWN:
+                addLeft(key, point);
+                addRight(key, point);
+                addTop(key, point);
+                addBottom(key, point);
+                break;
         }
     }
 

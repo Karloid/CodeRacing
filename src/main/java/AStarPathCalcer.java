@@ -1,3 +1,5 @@
+import model.Car;
+
 import java.util.*;
 
 import static java.lang.StrictMath.PI;
@@ -132,9 +134,10 @@ public class AStarPathCalcer implements PathCalcer {
 
     private void calcF(Node node) {
         //  double heuristik = getManhattanDistance(node.getPosition(), goalPosition);
-        double heuristik = getEuclideDistance(node.getPosition(), goalPosition);
+        Car self = context.getSelf();
+        double heuristik = getEuclideDistance(node.getPosition(), new Point(goalPosition.x - self.getSpeedX() * 10, goalPosition.y - self.getSpeedY() * 10, goalPosition.getContext()));
 
-        double angleTo = Math.abs(context.getSelf().getAngleTo(node.getPosition().x, node.getPosition().y));
+        double angleTo = Math.abs(self.getAngleTo(node.getPosition().x, node.getPosition().y));
         heuristik += angleTo * 100;
         ;
   /*       Node parent = node.getParent();

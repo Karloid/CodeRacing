@@ -54,13 +54,13 @@ public class Point {
     public void calcLinks() {
         links = new HashSet<>();
         checkAllPoints();
-        checkWaypoints();
+     //   checkWaypoints();
     }
 
     private void checkWaypoints() {
-        for (Point point : context.getWaypoints()) {
+      /*  for (Point point : context.getWaypoints()) {
             addLinkToIfCan2(point);
-        }
+        }*/
     }
 
     private void checkAllPoints() {

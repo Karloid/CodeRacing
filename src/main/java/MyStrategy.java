@@ -356,7 +356,9 @@ public final class MyStrategy implements Strategy {
             Point point2 = path.get(i - 2);
             Point point1 = path.get(i - 1);
             Point point0 = path.get(i);
-            if ((point2.x - point1.x != 0 && point1.x - point0.x != 0) && (point2.y - point1.y != 0 && point1.y - point0.y != 0)) {
+            if ((point2.x - point1.x == 0 && point1.x - point0.x == 0) || (point2.y - point1.y == 0 && point1.y - point0.y == 0)) {
+
+            } else {
                 log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
             }
         }

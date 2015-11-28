@@ -19,11 +19,11 @@ public class PolygonsWorld {
     private Map<LightPoint, List<Point>> allPoints;
     private Point userPoint;
 
-    public List<Point> getWaypoints() {
+    public List<LightPoint> getWaypoints() {
         return waypoints;
     }
 
-    private List<Point> waypoints;
+    private List<LightPoint> waypoints;
     private List<Point> resultPath;
 
     public PolygonsWorld(MyStrategy myStrategy, int width, int height) {
@@ -150,7 +150,7 @@ public class PolygonsWorld {
         waypoints = new ArrayList<>();
 
         for (int[] ints : world.getWaypoints()) {
-            Point newPoint = new Point(getVFromTile(ints[0]), getVFromTile(ints[1]), this);
+            LightPoint newPoint = new LightPoint(ints[0], ints[1]);
             waypoints.add(newPoint);
 
         }
@@ -160,9 +160,9 @@ public class PolygonsWorld {
 
         calcLinksForPoints();
 
-        for (Point waypoint : waypoints) {
+    /*    for (Point waypoint : waypoints) {
             waypoint.calcLinks();
-        }
+        }*/
 
         startPoint.calcLinks();
 
@@ -172,14 +172,22 @@ public class PolygonsWorld {
             if (i == 0) {
                 startPoint = userPoint;
             } else {
-                startPoint = waypoints.get(appendIndex(nextWaypointIndex, -1));
+                startPoint = allPoints.get(waypoints.get(appendIndex(nextWaypointIndex, -1))).get(0);
             }
-            endPoint = waypoints.get(nextWaypointIndex);
+            endPoint = allPoints.get(waypoints.get(nextWaypointIndex)).get(0);
 
             calcPath();
 
-            resultPath.addAll(getPathCalcer().getPath());
+            appendToResult(getPathCalcer().getPath());
+
             nextWaypointIndex = appendIndex(nextWaypointIndex, 1);
+        }
+    }
+
+    private void appendToResult(ArrayList<Point> path) {
+        for (Point newPoint : path) {
+            if (resultPath.size() == 0 || resultPath.get(resultPath.size() - 1) != newPoint)
+                resultPath.add(newPoint);
         }
     }
 
@@ -188,7 +196,7 @@ public class PolygonsWorld {
         if (result >= world.getWaypoints().length) {
             return 0;
         } else if (result < 0) {
-            return world.getWaypoints().length -1;
+            return world.getWaypoints().length - 1;
         }
         return result;
     }

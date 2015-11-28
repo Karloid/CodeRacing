@@ -168,7 +168,7 @@ public class PolygonsWorld {
 
         int nextWaypointIndex = self.getNextWaypointIndex();
         resultPath = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < waypoints.size(); i++) {
             if (i == 0) {
                 startPoint = userPoint;
             } else {
@@ -177,9 +177,10 @@ public class PolygonsWorld {
             endPoint = allPoints.get(waypoints.get(nextWaypointIndex)).get(0);
 
             boolean result = pathCalcer.calcPath();
-            if (!result){
+            if (!result) {
                 System.out.println("astar failed :|");
-                break;   }
+                break;
+            }
 
             appendToResult(getPathCalcer().getPath());
 
@@ -423,5 +424,9 @@ public class PolygonsWorld {
 
     public Map<LightPoint, List<Point>> getAllPoints() {
         return allPoints;
+    }
+
+    public Point getUserPosition() {
+        return userPoint;
     }
 }

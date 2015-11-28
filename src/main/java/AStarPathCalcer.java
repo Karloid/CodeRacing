@@ -53,7 +53,7 @@ public class AStarPathCalcer implements PathCalcer {
         calcF(startNode);
         openNodes.add(startNode);
 
-        while (openNodes.peek() != null &&!openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
+        while (openNodes.peek() != null && !openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
             //  System.out.println("openNodes count: " + openNodes.size());
             Node current = openNodes.peek();
             openNodes.remove(current);
@@ -75,9 +75,9 @@ public class AStarPathCalcer implements PathCalcer {
                 }
             }
         }
-      //  System.out.println();
-       // System.out.println("======+=+======");
-      //  System.out.println("done A* " + ":" + openNodes.peek().getParentsCount());
+        //  System.out.println();
+        // System.out.println("======+=+======");
+        //  System.out.println("done A* " + ":" + openNodes.peek().getParentsCount());
         if (openNodes.peek() == null) {
             return false;
         }
@@ -98,7 +98,7 @@ public class AStarPathCalcer implements PathCalcer {
                 break;
             }
         }
-      //  System.out.println(" A* length = " + length);
+        //  System.out.println(" A* length = " + length);
         Collections.reverse(path);
     }
 
@@ -134,6 +134,9 @@ public class AStarPathCalcer implements PathCalcer {
         //  double heuristik = getManhattanDistance(node.getPosition(), goalPosition);
         double heuristik = getEuclideDistance(node.getPosition(), goalPosition);
 
+        double angleTo = Math.abs(context.getSelf().getAngleTo(node.getPosition().x, node.getPosition().y));
+        heuristik -= angleTo * 100;
+        ;
   /*       Node parent = node.getParent();
        if (parent != null && parent.getParent() != null) {
             Point parentParentPoint = parent.getParent().getPosition();
@@ -305,6 +308,9 @@ public class AStarPathCalcer implements PathCalcer {
                     return count;
                 }
                 count++;
+                if (count > 100000) {
+                    return count;
+                }
             }
         }
     }

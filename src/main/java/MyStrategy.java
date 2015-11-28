@@ -1,5 +1,4 @@
 import model.*;
-import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 
@@ -62,6 +61,7 @@ public final class MyStrategy implements Strategy {
     private MyTile tmpWaypointTile;
 
     private PolygonsWorld polygonWorld;
+    private List<Point> path;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -218,8 +218,8 @@ public final class MyStrategy implements Strategy {
         float carefulCof = self.getDurability() < 0.15d ? 0.8f : 1f;
         float maxSpeed = MAX_SPEED * carefulCof;
         boolean tooFast = speedModule > maxSpeed && curWaypointInd != 0;
-        float maxSpeedOnCorner = 14 * carefulCof;
-        boolean tooFastCorner = speedModule > maxSpeedOnCorner && isCorner(curWaypointInd) && self.getDistanceTo(new FPoint(nextX, nextY)) < game.getTrackTileSize() * 0.8f;
+        float maxSpeedOnCorner = 13 * carefulCof;
+        boolean tooFastCorner = speedModule > maxSpeedOnCorner &&  abs(angleToWaypoint) > 0.2f;
         if (tooFastCorner) log("TOO fast for corner!");
 
         boolean slowTile = speedModule > maxSpeedOnCorner && isSlowTile();
@@ -262,7 +262,11 @@ public final class MyStrategy implements Strategy {
     }
 
     private boolean isTimeForNitro() { //TODO
-        return abs(angleToWaypoint) < 0.15f && isNitroTitle() && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+        return path.size() > 5 && isCorrectAngle(path.get(2)) && isCorrectAngle(path.get(3)) && isCorrectAngle(path.get(4)) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
+    }
+
+    private boolean isCorrectAngle(Point point) {
+        return abs(self.getAngleTo(point.x, point.y)) < 0.15f;
     }
 
     private void doWheelTurn() {
@@ -322,38 +326,14 @@ public final class MyStrategy implements Strategy {
 
     @SuppressWarnings("ConstantConditions")
     private void findNextXY() {
-       /* pointTileOffset = game.getTrackTileMargin() + game.getCarHeight();
 
-        tilesPoints = new ArrayList<>();
-        for (int i = 0; i <= 3; i++) {
-            int wayPointIndex = curWaypointInd + i;
-            if (wayPointIndex >= getWaypoints().size()) {
-                wayPointIndex = wayPointIndex - getWaypoints().size();
-            }
-            int waypointX = getWaypoints().get(wayPointIndex).x;
-            int waypointY = getWaypoints().get(wayPointIndex).y;
-
-            tilesPoints.add(getPointsFromWayPoint(waypointX, waypointY));
-        }
-        FPoint startPoint = new FPoint(self.getX(), self.getY());
-        Map<FPoint, Double> results = new HashMap<>();
-        for (FPoint root : tilesPoints.get(0)) {
-            results.put(root, getMinDistance(root, 1, startPoint.getDistanceTo(root) + 0));
-        }
-
-        Map.Entry<FPoint, Double> result = null;
-        for (Map.Entry<FPoint, Double> entry : results.entrySet()) {
-            if (result == null || entry.getValue() < result.getValue()) {
-                result = entry;
-            }
-        }*/
-        List<Point> path = polygonWorld.getResultPath();
+        path = polygonWorld.getResultPath();
         if (path == null || path.size() < 3) return;
         Point nextPoint = path.get(2);
         log("path length: " + path.size());
 
 
-        for (int i = 2 + 0; i < path.size(); i++) {
+        for (int i = 2 + 0; i < 2 + 3; i++) {
             Point point2 = path.get(i - 2);
             Point point1 = path.get(i - 1);
             Point point0 = path.get(i);
@@ -367,8 +347,8 @@ public final class MyStrategy implements Strategy {
             }
             int newX = (point1.x + point0.x + point2.x) / 3;
             int newY = (point1.y + point0.y + point2.y) / 3;
-            point1.x = (point1.x + newX)/2;
-            point1.y = (point1.y + newY)/2;
+            point1.x = (point1.x + newX) / 2;
+            point1.y = (point1.y + newY) / 2;
         }
         nextX = nextPoint.x;
         nextY = nextPoint.y;

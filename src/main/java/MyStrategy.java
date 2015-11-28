@@ -348,6 +348,7 @@ public final class MyStrategy implements Strategy {
             }
         }*/
         List<Point> path = polygonWorld.getResultPath();
+        if (path == null || path.size() < 3) return;
         Point nextPoint = path.get(2);
         log("path length: " + path.size());
 
@@ -361,13 +362,16 @@ public final class MyStrategy implements Strategy {
             if ((point2.x - point1.x != 0 || deltaX != 0) && (point2.y - point1.y != 0 || deltaY != 0)) {
                 log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
 
-                point1.x = (point1.x + point0.x + point2.x) / 3;
-                point1.y = (point1.y + point0.y + point2.y) / 3;
+              /*  point1.x = (point1.x + point0.x + point2.x) / 3;
+                point1.y = (point1.y + point0.y + point2.y) / 3;*/
             }
+            int newX = (point1.x + point0.x + point2.x) / 3;
+            int newY = (point1.y + point0.y + point2.y) / 3;
+            point1.x = (point1.x + newX)/2;
+            point1.y = (point1.y + newY)/2;
         }
         nextX = nextPoint.x;
         nextY = nextPoint.y;
-
     }
 
     private double getMinDistance(FPoint startPoint, int level, double sum) {

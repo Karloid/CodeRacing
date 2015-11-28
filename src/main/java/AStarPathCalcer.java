@@ -14,8 +14,8 @@ public class AStarPathCalcer implements PathCalcer {
     }
 
     @Override
-    public void calcPath() {
-        aStarCalc();
+    public boolean calcPath() {
+        return aStarCalc();
     }
 
     public AStarPathCalcer() {
@@ -34,7 +34,7 @@ public class AStarPathCalcer implements PathCalcer {
     private Node startNode;
     private ArrayList<Point> path;
 
-    private void aStarCalc() {
+    private boolean aStarCalc() {
         goalPosition = context.getEndPoint();
         closedNodes = new ArrayList<Node>();
         openNodes = new PriorityQueue<Node>(INITIAL_CAPACITY, new Comparator<Node>() {
@@ -53,7 +53,7 @@ public class AStarPathCalcer implements PathCalcer {
         calcF(startNode);
         openNodes.add(startNode);
 
-        while (!openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
+        while (openNodes.peek() != null &&!openNodes.peek().getPosition().equals(goalPosition) && !(openNodes.peek().getParentsCount() > MAX_LENGTH_PATH)) {
             //  System.out.println("openNodes count: " + openNodes.size());
             Node current = openNodes.peek();
             openNodes.remove(current);
@@ -78,7 +78,11 @@ public class AStarPathCalcer implements PathCalcer {
       //  System.out.println();
        // System.out.println("======+=+======");
       //  System.out.println("done A* " + ":" + openNodes.peek().getParentsCount());
+        if (openNodes.peek() == null) {
+            return false;
+        }
         savePath();
+        return true;
     }
 
     private void savePath() {

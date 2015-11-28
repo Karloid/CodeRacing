@@ -176,7 +176,10 @@ public class PolygonsWorld {
             }
             endPoint = allPoints.get(waypoints.get(nextWaypointIndex)).get(0);
 
-            calcPath();
+            boolean result = pathCalcer.calcPath();
+            if (!result){
+                System.out.println("astar failed :|");
+                break;   }
 
             appendToResult(getPathCalcer().getPath());
 
@@ -234,12 +237,12 @@ public class PolygonsWorld {
                         addLeft(key, point);
                         addTop(key, point);
                         break;
-                    case LEFT_HEADED_T:
+                    case RIGHT_HEADED_T:
                         addRight(key, point);
                         addTop(key, point);
                         addBottom(key, point);
                         break;
-                    case RIGHT_HEADED_T:
+                    case LEFT_HEADED_T:
                         addLeft(key, point);
                         addTop(key, point);
                         addBottom(key, point);
@@ -247,12 +250,13 @@ public class PolygonsWorld {
                     case TOP_HEADED_T:
                         addLeft(key, point);
                         addRight(key, point);
-                        addBottom(key, point);
+                        addTop(key, point);
                         break;
                     case BOTTOM_HEADED_T:
                         addLeft(key, point);
                         addRight(key, point);
-                        addTop(key, point);
+                        addBottom(key, point);
+
                         break;
                     case CROSSROADS:
                     case UNKNOWN:
@@ -352,10 +356,6 @@ public class PolygonsWorld {
 
     private int dSize(int v) {
         return (int) (v * game.getTrackTileSize());
-    }
-
-    private void calcPath() {
-        pathCalcer.calcPath();
     }
 
     public void setAllLinks(HashSet<Link> allLinks) {

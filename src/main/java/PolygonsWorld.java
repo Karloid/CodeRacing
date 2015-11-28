@@ -148,7 +148,7 @@ public class PolygonsWorld {
                 point.calcLinks();
             }
         }*/
-        System.out.println("done calc view graph " + " links in graph: " + getAllLinks().size());
+      //  System.out.println("done calc view graph " + " links in graph: " + getAllLinks().size());
         calcPath();
     }
 
@@ -281,10 +281,10 @@ public class PolygonsWorld {
                     int mediumY = topY + (botY - topY) / 2;
 
                     List<Point> points = new ArrayList<>(9);
-                    points.add(new Point(topX, topY, this));
-                    points.add(new Point(botX, topY, this));
-                    points.add(new Point(botX, botY, this));
-                    points.add(new Point(topX, botY, this));
+                 //   points.add(new Point(topX, topY, this));
+                 //   points.add(new Point(botX, topY, this));
+                  //  points.add(new Point(botX, botY, this));
+                 //   points.add(new Point(topX, botY, this));
                     points.add(new Point(mediumX, mediumY, this));
                  //   points.add(new Point(botX, mediumY, this));
                  //   points.add(new Point(topX, mediumY, this));

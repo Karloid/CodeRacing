@@ -1,5 +1,8 @@
 import java.util.*;
 
+import static java.lang.StrictMath.PI;
+import static java.lang.StrictMath.atan2;
+
 public class AStarPathCalcer implements PathCalcer {
     public static final int INITIAL_CAPACITY = 300;
     private PolygonsWorld context;
@@ -72,9 +75,9 @@ public class AStarPathCalcer implements PathCalcer {
                 }
             }
         }
-        System.out.println();
-        System.out.println("======+=+======");
-        System.out.println("done A* " + ":" + openNodes.peek().getParentsCount());
+      //  System.out.println();
+       // System.out.println("======+=+======");
+      //  System.out.println("done A* " + ":" + openNodes.peek().getParentsCount());
         savePath();
     }
 
@@ -126,6 +129,18 @@ public class AStarPathCalcer implements PathCalcer {
     private void calcF(Node node) {
         //  double heuristik = getManhattanDistance(node.getPosition(), goalPosition);
         double heuristik = getEuclideDistance(node.getPosition(), goalPosition);
+
+  /*       Node parent = node.getParent();
+       if (parent != null && parent.getParent() != null) {
+            Point parentParentPoint = parent.getParent().getPosition();
+            Point parentPoint = parent.getPosition();
+            Point curPoint = node.getPosition();
+            double prevAngle = getAngleTo(0, parentParentPoint.x, parentParentPoint.y, parentPoint.x, parentPoint.y);
+            double curAngle = getAngleTo(prevAngle, parentPoint.x, parentPoint.y, curPoint.x, curPoint.y);
+
+            heuristik += curAngle;
+        }*/
+
         double pathCost = (node.getParent() == null ? 0 : node.getParent().getG()
                 + context.getLink(node.getPosition(), node.getParent().getPosition()).getLength());
         double f = heuristik + pathCost;
@@ -147,6 +162,22 @@ public class AStarPathCalcer implements PathCalcer {
             return MOVE_COST * (distance);
         }
     }
+
+    public double getAngleTo(double angle, double x1, double y1, double x, double y) {
+        double absoluteAngleTo = atan2(y - y1, x - x1);
+        double relativeAngleTo = absoluteAngleTo - angle;
+
+        while (relativeAngleTo > PI) {
+            relativeAngleTo -= 2.0D * PI;
+        }
+
+        while (relativeAngleTo < -PI) {
+            relativeAngleTo += 2.0D * PI;
+        }
+
+        return relativeAngleTo;
+    }
+
 
     private double getManhattanDistance(Point position, Point position1) {
         double dx = Math.abs(position.getX() - position1.getX());
@@ -246,7 +277,7 @@ public class AStarPathCalcer implements PathCalcer {
 
         @Override
         public String toString() {
-            return "f: " +String.format("%.2f", getF())  + "; g: " + String.format("%.2f", getG()) + "; h: " + getH() + "; pos: " + getPosition();
+            return "f: " + String.format("%.2f", getF()) + "; g: " + String.format("%.2f", getG()) + "; h: " + getH() + "; pos: " + getPosition();
         }
 
         public void recalcF() {

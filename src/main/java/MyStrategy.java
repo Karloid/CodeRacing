@@ -87,8 +87,6 @@ public final class MyStrategy implements Strategy {
             polygonWorld = new PolygonsWorld(this, (int) (world.getWidth() * game.getTrackTileSize()), (int) (world.getHeight() * game.getTrackTileSize()));
         }
         polygonWorld.setup(self, world, game, move);
-        polygonWorld.setStartPoint(new Point(0, 0, polygonWorld));
-        polygonWorld.setEndPoint(new Point(5, 5, polygonWorld));
         polygonWorld.calcViewGraph();
     }
 
@@ -564,10 +562,15 @@ public final class MyStrategy implements Strategy {
             }
 
             int i = 0;
+            Point prevPoint =null;
             for (Point point : polygonWorld.getPathCalcer().getPath()) {
                 g2.setColor(i == 0 ? Color.red : i == 1 ? Color.cyan : Color.blue);
                 g2.fillOval(dSize(point.x) - 5, dSize(point.y) - 5, 10, 10);
                 i++;
+                if (prevPoint != null) {
+                    drawLine(prevPoint, point);
+                }
+                prevPoint = point;
             }
         }
 

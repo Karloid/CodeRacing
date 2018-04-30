@@ -492,9 +492,10 @@ public final class MyStrategy implements Strategy {
             frame = new JFrame();
             frame.setSize(dSize(world.getWidth() * game.getTrackTileSize()) + sidePadding * 2, dSize(world.getHeight() * game.getTrackTileSize()) + sidePadding * 2);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setVisible(true);
+
             panel = new MyPanel();
-            frame.add(panel);
+            frame.setContentPane(panel);
+            frame.setVisible(true);
         }
 
         frame.repaint();

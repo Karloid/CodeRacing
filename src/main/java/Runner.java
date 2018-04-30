@@ -7,6 +7,11 @@ public final class Runner {
     private final String token;
 
     public static void main(String[] args) throws IOException {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (args.length == 3) {
             new Runner(args).run();
         } else {

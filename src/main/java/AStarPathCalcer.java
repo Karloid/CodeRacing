@@ -21,7 +21,7 @@ public class AStarPathCalcer implements PathCalcer {
     }
 
     public AStarPathCalcer() {
-        path = new ArrayList<Point>();
+        path = new ArrayList<Point2D>();
     }
 
     private static final int START_NODE = 1;
@@ -32,9 +32,9 @@ public class AStarPathCalcer implements PathCalcer {
     private static final int MAX_LENGTH_PATH = 999;
     private PriorityQueue<Node> openNodes;
     private ArrayList<Node> closedNodes;
-    private Point goalPosition;
+    private Point2D goalPosition;
     private Node startNode;
-    private ArrayList<Point> path;
+    private ArrayList<Point2D> path;
 
     private boolean aStarCalc() {
         goalPosition = context.getEndPoint();
@@ -89,7 +89,7 @@ public class AStarPathCalcer implements PathCalcer {
 
     private void savePath() {
         length = 0;
-        path = new ArrayList<Point>();
+        path = new ArrayList<Point2D>();
         Node node = openNodes.peek();
         while (true) {
             path.add(node.getPosition());
@@ -106,9 +106,9 @@ public class AStarPathCalcer implements PathCalcer {
 
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<Node>();
-        Point position = node.getPosition();
+        Point2D position = node.getPosition();
         for (Link link : position.getLinks()) {
-            Point pointFromLink = link.getAnotherPoint(position);
+            Point2D pointFromLink = link.getAnotherPoint(position);
             Node newNode = new Node(pointFromLink);
             newNode.setParent(newNode);
             calcF(newNode);
@@ -118,7 +118,7 @@ public class AStarPathCalcer implements PathCalcer {
     }
 
 
-    private Node findNodeByPosition(Point point) {
+    private Node findNodeByPosition(Point2D point) {
         for (Node node : openNodes) {
             if (node.getPosition().equals(point)) {
                 return node;
@@ -135,16 +135,16 @@ public class AStarPathCalcer implements PathCalcer {
     private void calcF(Node node) {
         //  double heuristik = getManhattanDistance(node.getPosition(), goalPosition);
         Car self = context.getSelf();
-        double heuristik = getEuclideDistance(node.getPosition(), new Point(goalPosition.x - self.getSpeedX() * 10, goalPosition.y - self.getSpeedY() * 10, goalPosition.getContext()));
+        double heuristik = getEuclideDistance(node.getPosition(), new Point2D(goalPosition.x - self.getSpeedX() * 10, goalPosition.y - self.getSpeedY() * 10, goalPosition.getContext()));
 
         double angleTo = Math.abs(self.getAngleTo(node.getPosition().x, node.getPosition().y));
         heuristik += angleTo * 100;
         ;
   /*       Node parent = node.getParent();
        if (parent != null && parent.getParent() != null) {
-            Point parentParentPoint = parent.getParent().getPosition();
-            Point parentPoint = parent.getPosition();
-            Point curPoint = node.getPosition();
+            Point2D parentParentPoint = parent.getParent().getPosition();
+            Point2D parentPoint = parent.getPosition();
+            Point2D curPoint = node.getPosition();
             double prevAngle = getAngleTo(0, parentParentPoint.x, parentParentPoint.y, parentPoint.x, parentPoint.y);
             double curAngle = getAngleTo(prevAngle, parentPoint.x, parentPoint.y, curPoint.x, curPoint.y);
 
@@ -159,7 +159,7 @@ public class AStarPathCalcer implements PathCalcer {
         node.setH(heuristik);
     }
 
-    private double getEuclideDistance(Point position, Point position1) {
+    private double getEuclideDistance(Point2D position, Point2D position1) {
         double distance = Utils.getEuclideDistanceSimple(position, position1);
         if (BREAK_TIES && startNode != null) {
             double dx1 = position.getX() - position1.getX();
@@ -189,7 +189,7 @@ public class AStarPathCalcer implements PathCalcer {
     }
 
 
-    private double getManhattanDistance(Point position, Point position1) {
+    private double getManhattanDistance(Point2D position, Point2D position1) {
         double dx = Math.abs(position.getX() - position1.getX());
         double dy = Math.abs(position.getY() - position1.getY());
         if (BREAK_TIES && startNode != null) {
@@ -204,7 +204,7 @@ public class AStarPathCalcer implements PathCalcer {
         }
     }
 
-    public Point getGoalPosition() {
+    public Point2D getGoalPosition() {
         return goalPosition;
     }
 
@@ -216,7 +216,7 @@ public class AStarPathCalcer implements PathCalcer {
         return closedNodes;
     }
 
-    public ArrayList<Point> getPath() {
+    public ArrayList<Point2D> getPath() {
         return path;
     }
 
@@ -243,13 +243,13 @@ public class AStarPathCalcer implements PathCalcer {
             return position.hashCode();
         }
 
-        public Point getPosition() {
+        public Point2D getPosition() {
             return position;
         }
 
-        private final Point position;
+        private final Point2D position;
 
-        public Node(Point position) {
+        public Node(Point2D position) {
             this.position = position;
         }
 

@@ -8,8 +8,8 @@ import static java.lang.StrictMath.*;
 public abstract class Unit {
     private long id;
     private double mass;
-    private double x;
-    private double y;
+    public double x;
+    public double y;
     private double speedX;
     private double speedY;
     private double angle;

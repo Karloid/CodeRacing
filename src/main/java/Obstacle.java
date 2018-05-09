@@ -7,16 +7,16 @@ public class Obstacle {
     public static final Color CURRENT_OBSTACLE_COLOR = Color.GREEN;
     private static final int OFFSET = 0;
     public static final Color COLOR_FILL_POLYGON = Color.PINK;
-    private final java.util.List<Point> points;
+    private final java.util.List<Point2D> points;
     private PolygonsWorld context;
 
 
     public Obstacle(PolygonsWorld context) {
-        points = new ArrayList<Point>();
+        points = new ArrayList<Point2D>();
         setContext(context);
     }
 
-    public void addPoint(Point point) {
+    public void addPoint(Point2D point) {
         points.add(point);
         point.setObstacle(this);
         calcPoly();
@@ -28,10 +28,10 @@ public class Obstacle {
         float[] polygonPoints = new float[points.size() * 2];
 
         int i = 0;
-        for (Point point : points) {
-            polygonPoints[i] = point.getX();
+        for (Point2D point : points) {
+            polygonPoints[i] = (float) point.getX();
             i++;
-            polygonPoints[i] = point.getY();
+            polygonPoints[i] = (float) point.getY();
             i++;
         }
 
@@ -62,7 +62,7 @@ public class Obstacle {
 
     public void removeLastPoint() {
         if (points.size() > 0) {
-            Point point = points.get(points.size() - 1);
+            Point2D point = points.get(points.size() - 1);
             points.remove(point);
             point.setObstacle(null);
 
@@ -77,7 +77,7 @@ public class Obstacle {
         return context;
     }
 
-    public java.util.List<Point> getPoints() {
+    public java.util.List<Point2D> getPoints() {
         return points;
     }
 }

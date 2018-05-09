@@ -9,22 +9,22 @@ public class PolygonsWorld {
     private int width;
     private List<Obstacle> obstacles;
     private Obstacle currentObstacle;
-    private Point startPoint;
-    private Point endPoint;
+    private Point2D startPoint;
+    private Point2D endPoint;
     private HashSet<Link> allLinks;
     private Car self;
     private World world;
     private Game game;
     private Move move;
-    private Map<LightPoint, List<Point>> allPoints;
-    private Point userPoint;
+    private Map<LightPoint, List<Point2D>> allPoints;
+    private Point2D userPoint;
 
     public List<LightPoint> getWaypoints() {
         return waypoints;
     }
 
     private List<LightPoint> waypoints;
-    private List<Point> resultPath;
+    private List<Point2D> resultPath;
 
     public PolygonsWorld(MyStrategy myStrategy, int width, int height) {
         this.myStrategy = myStrategy;
@@ -70,7 +70,7 @@ public class PolygonsWorld {
             obstacles.add(currentObstacle);
             setCurrentObstacle(currentObstacle);
         }
-        currentObstacle.addPoint(new Point(x, y, this));
+        currentObstacle.addPoint(new Point2D(x, y, this));
     }
 
     public Obstacle getCurrentObstacle() {
@@ -82,26 +82,26 @@ public class PolygonsWorld {
     }
 
     public void addNewStartPoint(int x, int y) {
-        setStartPoint(new Point(x, y, this));
+        setStartPoint(new Point2D(x, y, this));
     }
 
-    public void setStartPoint(Point startPoint) {
+    public void setStartPoint(Point2D startPoint) {
         this.startPoint = startPoint;
     }
 
-    public Point getStartPoint() {
+    public Point2D getStartPoint() {
         return startPoint;
     }
 
     public void addNewEndPoint(int x, int y) {
-        setEndPoint(new Point(x, y, this));
+        setEndPoint(new Point2D(x, y, this));
     }
 
-    public void setEndPoint(Point endPoint) {
+    public void setEndPoint(Point2D endPoint) {
         this.endPoint = endPoint;
     }
 
-    public Point getEndPoint() {
+    public Point2D getEndPoint() {
         return endPoint;
     }
 
@@ -138,13 +138,13 @@ public class PolygonsWorld {
         }
     }
 
-    public List<Point> getResultPath() {
+    public List<Point2D> getResultPath() {
         return resultPath;
     }
 
     public void calcViewGraph() {
 
-        userPoint = new Point(self.getX(), self.getY(), this);
+        userPoint = new Point2D(self.getX(), self.getY(), this);
         startPoint = userPoint;
 
         waypoints = new ArrayList<>();
@@ -160,7 +160,7 @@ public class PolygonsWorld {
 
         calcLinksForPoints();
 
-    /*    for (Point waypoint : waypoints) {
+    /*    for (Point2D waypoint : waypoints) {
             waypoint.calcLinks();
         }*/
 
@@ -192,8 +192,8 @@ public class PolygonsWorld {
         }
     }
 
-    private void appendToResult(ArrayList<Point> path) {
-        for (Point newPoint : path) {
+    private void appendToResult(ArrayList<Point2D> path) {
+        for (Point2D newPoint : path) {
             if (resultPath.size() == 0 || resultPath.get(resultPath.size() - 1) != newPoint)
                 resultPath.add(newPoint);
         }
@@ -210,16 +210,16 @@ public class PolygonsWorld {
     }
 
     private void calcLinksForPoints() {
-        for (Map.Entry<LightPoint, List<Point>> entry : allPoints.entrySet()) {
+        for (Map.Entry<LightPoint, List<Point2D>> entry : allPoints.entrySet()) {
             LightPoint key = entry.getKey();
-            List<Point> points = entry.getValue();
-            for (Point point : points) {
+            List<Point2D> points = entry.getValue();
+            for (Point2D point : points) {
                 addLinks(key, point);
             }
         }
     }
 
-    private void addLinks(LightPoint key, Point point) {
+    private void addLinks(LightPoint key, Point2D point) {
         point.calcLinks();
         switch (key.getTileType()) {
             case EMPTY:
@@ -279,37 +279,37 @@ public class PolygonsWorld {
         }
     }
 
-    private void addTop(LightPoint key, Point value) {
-        List<Point> points = allPoints.get(new LightPoint(key.x, key.y - 1));
+    private void addTop(LightPoint key, Point2D value) {
+        List<Point2D> points = allPoints.get(new LightPoint(key.x, key.y - 1));
         if (points != null) {
-            for (Point point : points) {
+            for (Point2D point : points) {
                 value.createLink(point);
             }
         }
     }
 
-    private void addBottom(LightPoint key, Point value) {
-        List<Point> points = allPoints.get(new LightPoint(key.x, key.y + 1));
+    private void addBottom(LightPoint key, Point2D value) {
+        List<Point2D> points = allPoints.get(new LightPoint(key.x, key.y + 1));
         if (points != null) {
-            for (Point point : points) {
+            for (Point2D point : points) {
                 value.createLink(point);
             }
         }
     }
 
-    private void addLeft(LightPoint key, Point value) {
-        List<Point> points = allPoints.get(new LightPoint(key.x - 1, key.y));
+    private void addLeft(LightPoint key, Point2D value) {
+        List<Point2D> points = allPoints.get(new LightPoint(key.x - 1, key.y));
         if (points != null) {
-            for (Point point : points) {
+            for (Point2D point : points) {
                 value.createLink(point);
             }
         }
     }
 
-    private void addRight(LightPoint key, Point value) {
-        List<Point> points = allPoints.get(new LightPoint(key.x + 1, key.y));
+    private void addRight(LightPoint key, Point2D value) {
+        List<Point2D> points = allPoints.get(new LightPoint(key.x + 1, key.y));
         if (points != null) {
-            for (Point point : points) {
+            for (Point2D point : points) {
                 value.createLink(point);
             }
         }
@@ -342,16 +342,16 @@ public class PolygonsWorld {
                     int mediumX = topX + (botX - topX) / 2;
                     int mediumY = topY + (botY - topY) / 2;
 
-                    List<Point> points = new ArrayList<>(9);
-                    //   points.add(new Point(topX, topY, this));
-                    //   points.add(new Point(botX, topY, this));
-                    //  points.add(new Point(botX, botY, this));
-                    //   points.add(new Point(topX, botY, this));
-                    points.add(new Point(mediumX, mediumY, this));
-                    //   points.add(new Point(botX, mediumY, this));
-                    //   points.add(new Point(topX, mediumY, this));
-                    //    points.add(new Point(mediumX, botY, this));
-                    //    points.add(new Point(mediumX, topY, this));
+                    List<Point2D> points = new ArrayList<>(9);
+                    //   points.add(new Point2D(topX, topY, this));
+                    //   points.add(new Point2D(botX, topY, this));
+                    //  points.add(new Point2D(botX, botY, this));
+                    //   points.add(new Point2D(topX, botY, this));
+                    points.add(new Point2D(mediumX, mediumY, this));
+                    //   points.add(new Point2D(botX, mediumY, this));
+                    //   points.add(new Point2D(topX, mediumY, this));
+                    //    points.add(new Point2D(mediumX, botY, this));
+                    //    points.add(new Point2D(mediumX, topY, this));
 
                     LightPoint key = new LightPoint(x, y);
                     key.setTileType(tileType);
@@ -375,7 +375,7 @@ public class PolygonsWorld {
         return allLinks;
     }
 
-    public Link getLink(Point point, Point point2) {
+    public Link getLink(Point2D point, Point2D point2) {
         for (Link link : allLinks) {
             if (link.contain(point, point2)) {
                 return link;
@@ -425,16 +425,16 @@ public class PolygonsWorld {
         return move;
     }
 
-    public boolean inSameTile(Point point, Point point1) {
+    public boolean inSameTile(Point2D point, Point2D point1) {
         int trackTileSize = (int) game.getTrackTileSize();
         return point.x / trackTileSize == point1.x / trackTileSize && point.y / trackTileSize == point1.y / trackTileSize;
     }
 
-    public Map<LightPoint, List<Point>> getAllPoints() {
+    public Map<LightPoint, List<Point2D>> getAllPoints() {
         return allPoints;
     }
 
-    public Point getUserPosition() {
+    public Point2D getUserPosition() {
         return userPoint;
     }
 }

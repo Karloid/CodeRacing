@@ -7,7 +7,7 @@ import model.World
 class MyKStrategy : Strategy {
     private lateinit var self: Car
     lateinit var world: World
-    private lateinit var game: Game
+    lateinit var game: Game
     private lateinit var currentMove: Move
 
     public var nextWaypointX: Double = 0.0
@@ -16,9 +16,16 @@ class MyKStrategy : Strategy {
     override fun move(self: Car, world: World, game: Game, move: Move) {
         onTickStart(self, world, game, move)
 
+        if (world.tick < 200) {
+            return
+        }
         simMove();
 
-        move.enginePower = 1.0
+        log(Utils.format(currentMove.wheelTurn) + " " + Utils.format(currentMove.enginePower))
+    }
+
+    private fun log(msg: String) {
+        println(world.tick.toString() + ": " + msg)
     }
 
     private fun onTickStart(self: Car, world: World, game: Game, move: Move) {
@@ -32,28 +39,44 @@ class MyKStrategy : Strategy {
     }
 
     private fun simMove() {
-        var bestScore = -100_000
-        for (i in 1..50) {
+        var bestScore = -100_000.0
+        var bestMove: Move = Move()
+        for (i in 1..100) {   //TODO visualise
             val cars = world.cars.toCollection(ArrayList())
             var selfCopy = toExtSelf(self);
             val firstMove: Move = randomMove();
-            val move: Move = firstMove;
-            for (j in 1..30) {
+            var move: Move = firstMove;
+            for (j in 1..100) {
                 selfCopy.apply(move)
                 play(selfCopy)
+                move = randomMove()
             }
-            var score: Float = evaluate(selfCopy);
+            var score: Double = evaluate(selfCopy);
+
+            if (score > bestScore) {
+                bestScore = score
+                bestMove = firstMove;
+                log("best score " + Utils.format(bestScore))
+            }
+        }
+
+        currentMove.apply {
+            wheelTurn = bestMove.wheelTurn
+            enginePower = bestMove.enginePower
+            //TODO other
         }
 
     }
 
-    private fun evaluate(selfCopy: CarExt): Float {
-        return selfCopy.runningDistance;
+    private fun evaluate(selfCopy: CarExt): Double {
+        return selfCopy.getFinalEvaluation();
     }
 
     private fun play(car: CarExt) {
         car.x += car.speedX;
         car.y += car.speedY;
+        //TODO check collisions
+
 
         val tileSize = game.trackTileSize
         if (car.x >= car.nextWaypointX * tileSize && car.x <= car.nextWaypointX * tileSize + tileSize &&
@@ -69,7 +92,7 @@ class MyKStrategy : Strategy {
 
     private fun randomMove(): Move {
         val m = Move()
-        m.enginePower = 1.0
+        m.enginePower = 0.1
         m.wheelTurn = Math.random() * 2 - 1
         return m
     }

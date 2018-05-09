@@ -61,7 +61,7 @@ public final class MyStrategy implements Strategy {
     private MyTile tmpWaypointTile;
 
     private PolygonsWorld polygonWorld;
-    private List<Point> path;
+    private List<Point2D> path;
 
     @Override
     public void move(Car self, World world, Game game, Move move) {
@@ -268,7 +268,7 @@ public final class MyStrategy implements Strategy {
         return path.size() > 6 && isCorrectAngle(path.get(2)) && isCorrectAngle(path.get(3)) && isCorrectAngle(path.get(4)) && isCorrectAngle(path.get(4)) && game.getInitialFreezeDurationTicks() < world.getTick() && self.getNitroChargeCount() > 0;
     }
 
-    private boolean isCorrectAngle(Point point) {
+    private boolean isCorrectAngle(Point2D point) {
         return abs(self.getAngleTo(point.x, point.y)) < 0.15f;
     }
 
@@ -332,35 +332,35 @@ public final class MyStrategy implements Strategy {
 
         path = polygonWorld.getResultPath();
         if (path == null || path.size() < 3) return;
-        Point nextPoint = path.get(1);
+        Point2D nextPoint = path.get(1);
         log("path length: " + path.size());
 
 
         for (int i = 2 + 0; i < 3 + 1; i++) {
-            Point point2 = path.get(i - 2);
-            Point point1 = path.get(i - 1);
-            Point point0 = path.get(i);
-            int deltaX = point1.x - point0.x;
-            int deltaY = point1.y - point0.y;
+            Point2D point2 = path.get(i - 2);
+            Point2D point1 = path.get(i - 1);
+            Point2D point0 = path.get(i);
+            int deltaX = (int) (point1.x - point0.x);
+            int deltaY = (int) (point1.y - point0.y);
             boolean isAngle = false;
             if ((point2.x - point1.x != 0 || deltaX != 0) && (point2.y - point1.y != 0 || deltaY != 0)) {
                 log("found angle at x: " + point1.x / game.getTrackTileSize() + " y: " + point1.y / game.getTrackTileSize());
                 isAngle = true;
             }
 
-            int newX = (point1.x + point0.x + point2.x) / 3;
-            int newY = (point1.y + point0.y + point2.y) / 3;
+            int newX = (int) ((point1.x + point0.x + point2.x) / 3);
+            int newY = (int) ((point1.y + point0.y + point2.y) / 3);
             point1.x = (point1.x + newX) / 2;
             point1.y = (point1.y + newY) / 2;
 
             point1.x = (point1.x + newX) / 2;
             point1.y = (point1.y + newY) / 2;
 
-            int tmpX = (point0.x + point2.x) / 2;
-            int tmpY = (point0.y + point2.y) / 2;
+            int tmpX = (int) ((point0.x + point2.x) / 2);
+            int tmpY = (int) ((point0.y + point2.y) / 2);
 
-            deltaX = point1.x - tmpX;
-            deltaY = point1.y - tmpY;
+            deltaX = (int) (point1.x - tmpX);
+            deltaY = (int) (point1.y - tmpY);
 
             if (isAngle) {
                 point2.x += deltaX * 0.7f;
@@ -579,15 +579,15 @@ public final class MyStrategy implements Strategy {
             drawLine(polygonWorld.getStartPoint(), polygonWorld.getEndPoint());
             for (Link link : polygonWorld.getAllLinks()) {
                 g2.setColor(new Color(0x7F75DD));
-                Iterator<Point> iterator = link.getPoints().iterator();
-                Point first = iterator.next();
-                Point second = iterator.next();
+                Iterator<Point2D> iterator = link.getPoints().iterator();
+                Point2D first = iterator.next();
+                Point2D second = iterator.next();
                 drawLine(first, second);
             }
 
             int i = 0;
-            Point prevPoint = null;
-            for (Point point : polygonWorld.getResultPath()) {
+            Point2D prevPoint = null;
+            for (Point2D point : polygonWorld.getResultPath()) {
                 g2.setColor(i == 0 ? Color.red : i == 1 ? Color.cyan : Color.blue);
                 g2.fillOval(dSize(point.x) - 5, dSize(point.y) - 5, 10, 10);
                 i++;
@@ -598,7 +598,7 @@ public final class MyStrategy implements Strategy {
             }
         }
 
-        private void drawLine(Point first, Point second) {
+        private void drawLine(Point2D first, Point2D second) {
             g2.drawLine(dSize(first.x), dSize(first.y), dSize(second.x), dSize(second.y));
         }
 
@@ -796,11 +796,11 @@ public final class MyStrategy implements Strategy {
             this(getWaypoints().get(curWaypointInd).x * game.getTrackTileSize(), getWaypoints().get(curWaypointInd).y * game.getTrackTileSize());
         }
 
-        public FPoint(Point point) {
+        public FPoint(Point2D point) {
             super(0, 0, point.x, point.y, 0, 0, 0, 0);
         }
 
-        public FPoint(Point point, double angleToPoint_1) {
+        public FPoint(Point2D point, double angleToPoint_1) {
             super(0, 0, point.x, point.y, 0, 0, angleToPoint_1, 0);
         }
 

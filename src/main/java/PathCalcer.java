@@ -5,5 +5,5 @@ public interface PathCalcer {
 
     boolean calcPath();
 
-    public ArrayList<Point> getPath();
+    public ArrayList<Point2D> getPath();
 }

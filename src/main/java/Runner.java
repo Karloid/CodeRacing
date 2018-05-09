@@ -34,7 +34,7 @@ public final class Runner {
             Strategy[] strategies = new Strategy[teamSize];
 
             for (int strategyIndex = 0; strategyIndex < teamSize; ++strategyIndex) {
-                strategies[strategyIndex] = new MyStrategy();
+                strategies[strategyIndex] = new MyKStrategy();
             }
 
             PlayerContext playerContext;

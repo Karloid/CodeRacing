@@ -17,6 +17,12 @@ public abstract class RectangularUnit extends Unit {
         this.height = height;
     }
 
+    public RectangularUnit(RectangularUnit other) {
+        super(other);
+        this.width = other.width;
+        this.height = other.height;
+    }
+
     /**
      * @return Возвращает ширину объекта.
      */

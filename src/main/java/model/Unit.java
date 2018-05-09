@@ -6,14 +6,14 @@ import static java.lang.StrictMath.*;
  * Базовый класс для определения объектов (<<юнитов>>) на игровом поле.
  */
 public abstract class Unit {
-    private final long id;
-    private final double mass;
-    private final double x;
-    private final double y;
-    private final double speedX;
-    private final double speedY;
-    private final double angle;
-    private final double angularSpeed;
+    private long id;
+    private double mass;
+    private double x;
+    private double y;
+    private double speedX;
+    private double speedY;
+    private double angle;
+    private double angularSpeed;
 
     protected Unit(
             long id, double mass, double x, double y, double speedX, double speedY, double angle, double angularSpeed) {
@@ -25,6 +25,17 @@ public abstract class Unit {
         this.speedY = speedY;
         this.angle = angle;
         this.angularSpeed = angularSpeed;
+    }
+
+    public Unit(Unit other) {
+        this.id = other.id;
+        this.mass = other.mass;
+        this.x = other.x;
+        this.y = other.y;
+        this.speedX = other.speedX;
+        this.speedY = other.speedY;
+        this.angle = other.angle;
+        this.angularSpeed = other.angularSpeed;
     }
 
     /**
@@ -44,7 +55,7 @@ public abstract class Unit {
     /**
      * @return Возвращает X-координату центра объекта. Ось абсцисс направлена слева направо.
      */
-    public final double getX() {
+    public double getX() {
         return x;
     }
 
@@ -53,6 +64,30 @@ public abstract class Unit {
      */
     public final double getY() {
         return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
+
+    public void setSpeedY(double speedY) {
+        this.speedY = speedY;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+
+    public void setAngularSpeed(double angularSpeed) {
+        this.angularSpeed = angularSpeed;
     }
 
     /**

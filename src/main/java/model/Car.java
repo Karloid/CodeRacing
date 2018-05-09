@@ -9,27 +9,87 @@ public class Car extends RectangularUnit {
     private final boolean teammate;
     private final CarType type;
 
-    private final int projectileCount;
-    private final int nitroChargeCount;
-    private final int oilCanisterCount;
+    private int projectileCount;
+    private int nitroChargeCount;
+    private int oilCanisterCount;
 
-    private final int remainingProjectileCooldownTicks;
-    private final int remainingNitroCooldownTicks;
-    private final int remainingOilCooldownTicks;
+    private int remainingProjectileCooldownTicks;
+    private int remainingNitroCooldownTicks;
+    private int remainingOilCooldownTicks;
 
-    private final int remainingNitroTicks;
-    private final int remainingOiledTicks;
+    private int remainingNitroTicks;
+    private int remainingOiledTicks;
 
-    private final double durability;
+    private double durability;
 
-    private final double enginePower;
-    private final double wheelTurn;
+    private double enginePower;
+    private double wheelTurn;
 
-    private final int nextWaypointIndex;
-    private final int nextWaypointX;
-    private final int nextWaypointY;
+    private int nextWaypointIndex;
+    private int nextWaypointX;
+    private int nextWaypointY;
 
-    private final boolean finishedTrack;
+    private boolean finishedTrack;
+
+    public void setProjectileCount(int projectileCount) {
+        this.projectileCount = projectileCount;
+    }
+
+    public void setNitroChargeCount(int nitroChargeCount) {
+        this.nitroChargeCount = nitroChargeCount;
+    }
+
+    public void setOilCanisterCount(int oilCanisterCount) {
+        this.oilCanisterCount = oilCanisterCount;
+    }
+
+    public void setRemainingProjectileCooldownTicks(int remainingProjectileCooldownTicks) {
+        this.remainingProjectileCooldownTicks = remainingProjectileCooldownTicks;
+    }
+
+    public void setRemainingNitroCooldownTicks(int remainingNitroCooldownTicks) {
+        this.remainingNitroCooldownTicks = remainingNitroCooldownTicks;
+    }
+
+    public void setRemainingOilCooldownTicks(int remainingOilCooldownTicks) {
+        this.remainingOilCooldownTicks = remainingOilCooldownTicks;
+    }
+
+    public void setRemainingNitroTicks(int remainingNitroTicks) {
+        this.remainingNitroTicks = remainingNitroTicks;
+    }
+
+    public void setRemainingOiledTicks(int remainingOiledTicks) {
+        this.remainingOiledTicks = remainingOiledTicks;
+    }
+
+    public void setDurability(double durability) {
+        this.durability = durability;
+    }
+
+    public void setEnginePower(double enginePower) {
+        this.enginePower = enginePower;
+    }
+
+    public void setWheelTurn(double wheelTurn) {
+        this.wheelTurn = wheelTurn;
+    }
+
+    public void setNextWaypointIndex(int nextWaypointIndex) {
+        this.nextWaypointIndex = nextWaypointIndex;
+    }
+
+    public void setNextWaypointX(int nextWaypointX) {
+        this.nextWaypointX = nextWaypointX;
+    }
+
+    public void setNextWaypointY(int nextWaypointY) {
+        this.nextWaypointY = nextWaypointY;
+    }
+
+    public void setFinishedTrack(boolean finishedTrack) {
+        this.finishedTrack = finishedTrack;
+    }
 
     public Car(
             long id, double mass, double x, double y, double speedX, double speedY, double angle, double angularSpeed,
@@ -59,6 +119,29 @@ public class Car extends RectangularUnit {
         this.nextWaypointX = nextWaypointX;
         this.nextWaypointY = nextWaypointY;
         this.finishedTrack = finishedTrack;
+    }
+
+    public Car(Car other) {
+        super(other);
+        this.playerId = other.playerId;
+        this.teammateIndex = other.teammateIndex;
+        this.teammate = other.teammate;
+        this.type = other.type;
+        this.projectileCount = other.projectileCount;
+        this.nitroChargeCount = other.nitroChargeCount;
+        this.oilCanisterCount = other.oilCanisterCount;
+        this.remainingProjectileCooldownTicks = other.remainingProjectileCooldownTicks;
+        this.remainingNitroCooldownTicks = other.remainingNitroCooldownTicks;
+        this.remainingOilCooldownTicks = other.remainingOilCooldownTicks;
+        this.remainingNitroTicks = other.remainingNitroTicks;
+        this.remainingOiledTicks = other.remainingOiledTicks;
+        this.durability = other.durability;
+        this.enginePower = other.enginePower;
+        this.wheelTurn = other.wheelTurn;
+        this.nextWaypointIndex = other.nextWaypointIndex;
+        this.nextWaypointX = other.nextWaypointX;
+        this.nextWaypointY = other.nextWaypointY;
+        this.finishedTrack = other.finishedTrack;
     }
 
     /**

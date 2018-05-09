@@ -1,44 +1,77 @@
 import model.Car
 import model.Game
 import model.Move
-import model.TileType.*
 import model.World
 
 
 class MyKStrategy : Strategy {
+    private lateinit var self: Car
+    lateinit var world: World
+    private lateinit var game: Game
+    private lateinit var currentMove: Move
+
+    public var nextWaypointX: Double = 0.0
+    public var nextWaypointY: Double = 0.0
+
     override fun move(self: Car, world: World, game: Game, move: Move) {
-        var nextWaypointX = (self.nextWaypointX + 0.5) * game.trackTileSize
-        var nextWaypointY = (self.nextWaypointY + 0.5) * game.trackTileSize
+        onTickStart(self, world, game, move)
 
-        val cornerTileOffset = 0.25 * game.trackTileSize
+        simMove();
 
-        when (world.tilesXY[self.nextWaypointX][self.nextWaypointY]) {
-            LEFT_TOP_CORNER -> {
-                nextWaypointX += cornerTileOffset
-                nextWaypointY += cornerTileOffset
+        move.enginePower = 1.0
+    }
+
+    private fun onTickStart(self: Car, world: World, game: Game, move: Move) {
+        this.self = self;
+        this.world = world;
+        this.game = game;
+        this.currentMove = move;
+
+        nextWaypointX = (self.nextWaypointX + 0.5) * game.trackTileSize
+        nextWaypointY = (self.nextWaypointY + 0.5) * game.trackTileSize
+    }
+
+    private fun simMove() {
+        var bestScore = -100_000
+        for (i in 1..50) {
+            val cars = world.cars.toCollection(ArrayList())
+            var selfCopy = toExtSelf(self);
+            val firstMove: Move = randomMove();
+            val move: Move = firstMove;
+            for (j in 1..30) {
+                selfCopy.apply(move)
+                play(selfCopy)
             }
-            RIGHT_TOP_CORNER -> {
-                nextWaypointX -= cornerTileOffset
-                nextWaypointY += cornerTileOffset
-            }
-            LEFT_BOTTOM_CORNER -> {
-                nextWaypointX += cornerTileOffset
-                nextWaypointY -= cornerTileOffset
-            }
-            RIGHT_BOTTOM_CORNER -> {
-                nextWaypointX -= cornerTileOffset
-                nextWaypointY -= cornerTileOffset
-            }
+            var score: Float = evaluate(selfCopy);
         }
 
-        val angleToWaypoint = self.getAngleTo(nextWaypointX, nextWaypointY)
-        val speedModule = FastMath.hypot(self.speedX, self.speedY)
+    }
 
-        move.wheelTurn = angleToWaypoint * 32.0 / Math.PI
-        move.enginePower = 0.75
+    private fun evaluate(selfCopy: CarExt): Float {
+        return selfCopy.runningDistance;
+    }
 
-        if (speedModule * speedModule * Math.abs(angleToWaypoint) > 2.5 * 2.5 * Math.PI) {
-            move.isBrake = true
+    private fun play(car: CarExt) {
+        car.x += car.speedX;
+        car.y += car.speedY;
+
+        val tileSize = game.trackTileSize
+        if (car.x >= car.nextWaypointX * tileSize && car.x <= car.nextWaypointX * tileSize + tileSize &&
+                car.y >= car.nextWaypointY * tileSize && car.y <= car.nextWaypointY * tileSize + tileSize) {
+            car.calcNextWaypoint()
         }
     }
+
+    private fun toExtSelf(self: Car): CarExt {
+        val carExt = CarExt(self, this)
+        return carExt
+    }
+
+    private fun randomMove(): Move {
+        val m = Move()
+        m.enginePower = 1.0
+        m.wheelTurn = Math.random() * 2 - 1
+        return m
+    }
 }
+

@@ -1,6 +1,7 @@
 import model.Move
 
-class SimContext {
+class SimContext() {
+    var isMovingBackward: Boolean = false
     private val debugSim: Boolean = true
 
     public val moves: MutableList<Point2D> = ArrayList(0)

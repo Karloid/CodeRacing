@@ -67,12 +67,12 @@ class MyKStrategy : Strategy {
             val cntx = SimContext();
             allSimContexts.add(cntx)
             cntx.self = toExtSelf(self);
-            cntx.firstMove = getNextMove(i, null);
+            cntx.firstMove = getNextMove(i, null, cntx);
             var move = cntx.firstMove;
             for (j in 1..400) {
                 cntx.self.apply(move, this)
                 play(cntx)
-                move = getNextMove(i, move)
+                move = getNextMove(i, move, cntx)
                 if (cntx.collisions) {
                     break
                 }
@@ -100,7 +100,7 @@ class MyKStrategy : Strategy {
 
     }
 
-    private fun getNextMove(i: Int, move: Move?): Move {
+    private fun getNextMove(i: Int, move: Move?, cntx: SimContext): Move {
         var move1 = move
         move1 = randomMove(move1)
 
@@ -110,6 +110,7 @@ class MyKStrategy : Strategy {
             move1.wheelTurn = 1.0
         } else if (i in 3..10) {
             move1.enginePower = -1.0
+            cntx.isMovingBackward = true
         }
         return move1
     }
@@ -117,7 +118,11 @@ class MyKStrategy : Strategy {
     private fun evaluate(cntx: SimContext): Double {
         cntx.isValid = cntx.self.movedDistance > game.carWidth
 
-        return cntx.self.getFinalEvaluation();
+        var eval = cntx.self.getFinalEvaluation()
+        if (cntx.isMovingBackward) {
+            eval = (100 - eval) / 10
+        }
+        return eval;
     }
 
     private fun play(context: SimContext) {

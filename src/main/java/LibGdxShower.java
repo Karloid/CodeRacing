@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import model.Car;
 import model.TileType;
 
+import java.util.List;
+
 public class LibGdxShower implements ApplicationListener {
 
     static {
@@ -115,6 +117,9 @@ public class LibGdxShower implements ApplicationListener {
 
         drawContexts(data);
 
+        shapes.setColor(Color.RED);
+        drawLine(data.carPoints, 10);
+
     }
 
     private void drawContexts(LibGdxDataToPaint data) {
@@ -131,10 +136,15 @@ public class LibGdxShower implements ApplicationListener {
     }
 
     private void drawMoves(SimContext allSimContext) {
+        List<Point2D> points = allSimContext.getMoves();
+        drawLine(points, 4);
+    }
+
+    private void drawLine(List<Point2D> points, int width) {
         Point2D prevP = null;
-        for (Point2D p : allSimContext.getMoves()) {
+        for (Point2D p : points) {
             if (prevP != null) {
-                shapes.rectLine((float) prevP.x, (float) prevP.y, (float) p.x, (float) p.y, 4);
+                shapes.rectLine((float) prevP.x, (float) prevP.y, (float) p.x, (float) p.y, width);
             }
             prevP = p;
             shapes.rect((float) p.x, (float) p.y, 4, 4);

@@ -2,6 +2,8 @@ import model.Car
 import model.Game
 import model.Move
 import model.World
+import java.lang.Math.cos
+import java.lang.Math.sin
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -110,16 +112,57 @@ class MyKStrategy : Strategy {
     }
 
     private fun playCar(car: CarExt) {
+        var ox = car.x
+        var oy = car.y
+
         car.x += car.speedX;
         car.y += car.speedY;
         //TODO check collisions
-
-
-        val tileSize = game.trackTileSize
-        if (car.x >= car.nextWaypointX * tileSize && car.x <= car.nextWaypointX * tileSize + tileSize &&
-                car.y >= car.nextWaypointY * tileSize && car.y <= car.nextWaypointY * tileSize + tileSize) {
-            car.calcNextWaypoint()
+        if (!noColisions(car)) {
+            car.x = ox
+            car.y = oy
+            car.speedX = 0.0;
+            car.speedY = 0.0;
+        } else {
+            val tileSize = game.trackTileSize
+            if (car.x >= car.nextWaypointX * tileSize && car.x <= car.nextWaypointX * tileSize + tileSize &&
+                    car.y >= car.nextWaypointY * tileSize && car.y <= car.nextWaypointY * tileSize + tileSize) {
+                car.calcNextWaypoint()
+            }
         }
+    }
+
+    public fun noColisions(car: CarExt): Boolean {
+        val carPoints = getCarPoints(car)
+
+        carPoints.size
+        return true
+    }
+
+    public fun getCarPoints(car: Car): ArrayList<Point2D> {
+        val carPoints = ArrayList<Point2D>()
+        val w = game.carWidth / 2
+        val h = game.carHeight / 2
+        carPoints.add(Point2D(car.x + w, car.y + h))
+        carPoints.add(Point2D(car.x - w, car.y + h))
+        carPoints.add(Point2D(car.x - w, car.y - h))
+        carPoints.add(Point2D(car.x + w, car.y - h))
+
+        for (p in carPoints) {
+            // translate point to origin
+            val tempX = p.x - car.x
+            val tempY = p.y - car.y
+
+            // now apply rotation
+            val rotatedX = tempX * cos(car.angle) - tempY * sin(car.angle)
+            val rotatedY = tempX * sin(car.angle) + tempY * cos(car.angle)
+
+            // translate back
+            p.x = rotatedX + car.x
+            p.y = rotatedY + car.y
+
+        }
+        return carPoints
     }
 
     private fun toExtSelf(self: Car): CarExt {
@@ -129,7 +172,7 @@ class MyKStrategy : Strategy {
 
     private fun randomMove(): Move {
         val m = Move()
-        m.enginePower = 0.1
+        m.enginePower = 0.5
         m.wheelTurn = Math.random() * 2 - 1
         return m
     }

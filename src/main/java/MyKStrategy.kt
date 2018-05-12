@@ -40,18 +40,17 @@ class MyKStrategy : Strategy {
 
     private fun simMove() {
         var bestScore = -100_000.0
-        var bestMove: Move = Move()
+        var bestMove = Move()
         for (i in 1..100) {   //TODO visualise
-            val cars = world.cars.toCollection(ArrayList())
-            var selfCopy = toExtSelf(self);
-            val firstMove: Move = randomMove();
-            var move: Move = firstMove;
+            val selfCopy = toExtSelf(self);
+            val firstMove = randomMove();
+            var move = firstMove;
             for (j in 1..100) {
                 selfCopy.apply(move)
                 play(selfCopy)
                 move = randomMove()
             }
-            var score: Double = evaluate(selfCopy);
+            val score = evaluate(selfCopy);
 
             if (score > bestScore) {
                 bestScore = score

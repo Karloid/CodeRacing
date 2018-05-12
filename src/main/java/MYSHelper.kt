@@ -42,7 +42,11 @@ public fun hasCollisions(p: Point2D, currentTile: TileType, tileSize: Double, ma
         TileType.RIGHT_HEADED_T -> TODO()
         TileType.TOP_HEADED_T -> TODO()
         TileType.BOTTOM_HEADED_T -> TODO()
-        TileType.CROSSROADS -> TODO()
+        TileType.CROSSROADS -> {
+            if (isLTCor(normX, normY, margin, tileSize) || isLBCor(normX, normY, margin, tileSize) || isRTCor(normX, normY, margin, tileSize) || isRBCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
+        }
         TileType.UNKNOWN -> TODO()
     }
     return false

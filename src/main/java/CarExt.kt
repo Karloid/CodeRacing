@@ -20,7 +20,6 @@ class CarExt : Car {
             enginePower -= mys.game.carEnginePowerChangePerTick
         }
 
-
         var speedVector = speedVector()
 
         movedDistance += speedVector.length()
@@ -36,14 +35,28 @@ class CarExt : Car {
         //speedVector = speedVector.mul(2.0)
 
         var turn = mys.game.carWheelTurnChangePerTick * 0.7
+
+        if (wheelTurn > move.wheelTurn) {
+            wheelTurn -= turn
+        } else {
+            wheelTurn += turn
+        }
         if (move.wheelTurn < 0) {
             turn = -turn;
         }
         if (enginePower < 0) {
             turn = -turn;
         }
+        /*TODO Относительный поворот руля/колёс car.wheelTurn. Значение находится в интервале от −1.0 до 1.0 и,
+            как и car.enginePower, не может изменяться мгновенно, а двигается к желаемому значению
+            move.wheelTurn со скоростью, не превышающей по модулю 0.05 за тик. Ненулевой поворот колёс
+            порождает составляющую угловой скорости кодемобиля, значение которой прямо пропорционально
+            car.wheelTurn, коэффициенту game.carAngularSpeedFactor, а также скалярному произведению
+            вектора скорости кодемобиля и единичного вектора, направление которого совпадает с направлением
+            кодемобиля. Однако реальная угловая скорость может отличаться от данного значения вследствие
+            столкновений кодемобиля с другими игровыми объектами.*/
 
-        speedVector = speedVector.rotate(turn)
+        speedVector = speedVector.rotate(turn) //TODO real physic for rotation
         speedX = speedVector.x
         speedY = speedVector.y
         var i = 10

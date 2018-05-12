@@ -62,7 +62,7 @@ class MyKStrategy : Strategy {
         var bestScore = -100_000.0
         var bestCntx: SimContext? = null
 
-        for (i in 1..100) {   //TODO visualise
+        for (i in 1..25) {   //TODO visualise
 
             val cntx = SimContext();
             allSimContexts.add(cntx)
@@ -111,6 +111,10 @@ class MyKStrategy : Strategy {
         var move1 = move
         move1 = randomMove(move1)
 
+        val n = 0
+        val spread = 5
+        val to = n + spread
+
         if (i == 1) {
             move1.wheelTurn = -1.0
         } else if (i == 2) {
@@ -123,7 +127,10 @@ class MyKStrategy : Strategy {
                 move1.wheelTurn = -1.0
             }
             cntx.isMovingBackward = true
-        }
+        } else if (i in n..to) {
+                move1.wheelTurn = -1.0
+                move1.wheelTurn += (i - n) * (2 / spread.toFloat())
+            }
         return move1
     }
 

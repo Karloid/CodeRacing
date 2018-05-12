@@ -12,8 +12,8 @@ class MyKStrategy : Strategy {
     lateinit var game: Game
     private lateinit var currentMove: Move
 
-    public var nextWaypointX: Double = 0.0
-    public var nextWaypointY: Double = 0.0
+    private var nextWaypointX: Double = 0.0
+    private var nextWaypointY: Double = 0.0
 
     override fun move(self: Car, world: World, game: Game, move: Move) {
         onTickStart(self, world, game, move)

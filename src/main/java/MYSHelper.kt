@@ -9,7 +9,7 @@ public fun hasCollisions(p: Point2D, currentTile: TileType, tileSize: Double, ma
         TileType.EMPTY -> {
         }
         TileType.VERTICAL -> {
-            if (isLeftW(normX, margin) || isRightW(tileSize, margin, normX)) {
+            if (isLeftW(normX, margin) || isRightW(normX, margin, tileSize)) {
                 return true;
             }
         }
@@ -24,15 +24,19 @@ public fun hasCollisions(p: Point2D, currentTile: TileType, tileSize: Double, ma
             }
         }
         TileType.RIGHT_TOP_CORNER -> {
-            if (isRightW(tileSize, normX, margin) || isTopW(normY, margin) || isLBCor(normX, normY, margin, tileSize)) {
+            if (isRightW(margin, normX, tileSize) || isTopW(normY, margin) || isLBCor(normX, normY, margin, tileSize)) {
                 return true;
             }
         }
         TileType.LEFT_BOTTOM_CORNER -> {
-            //TODO
+            if (isLeftW(normX, margin) || isBottomW(normY, margin, tileSize) || isRTCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
         }
         TileType.RIGHT_BOTTOM_CORNER -> {
-            //TODO
+            if (isRightW(margin, normX, tileSize) || isBottomW(normY, margin, tileSize) || isLTCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
         }
         TileType.LEFT_HEADED_T -> TODO()
         TileType.RIGHT_HEADED_T -> TODO()
@@ -54,7 +58,15 @@ private fun isLBCor(normX: Double, normY: Double, margin: Double, tileSize: Doub
     return Point2D.getDistance(normX, normY, 0.0, tileSize) < margin
 }
 
-private fun isRightW(tileSize: Double, margin: Double, normX: Double) = tileSize - margin < normX
+private fun isRTCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
+    return Point2D.getDistance(normX, normY, tileSize, 0.0) < margin
+}
+
+private fun isLTCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
+    return Point2D.getDistance(normX, normY, 0.0, 0.0) < margin
+}
+
+private fun isRightW(normX: Double, margin: Double, tileSize: Double) = tileSize - margin < normX
 
 private fun isLeftW(normX: Double, margin: Double) = normX < margin
 

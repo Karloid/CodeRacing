@@ -1,25 +1,24 @@
 import model.Car
-import model.CarType
 import model.Move
 
 class CarExt : Car {
-    var runningDistance = 0.0
+    var scoreValue = 0.0
 
-    constructor(id: Long, mass: Double, x: Double, y: Double, speedX: Double, speedY: Double, angle: Double, angularSpeed: Double, width: Double, height: Double, playerId: Long, teammateIndex: Int, teammate: Boolean, type: CarType, projectileCount: Int, nitroChargeCount: Int, oilCanisterCount: Int, remainingProjectileCooldownTicks: Int, remainingNitroCooldownTicks: Int, remainingOilCooldownTicks: Int, remainingNitroTicks: Int, remainingOiledTicks: Int, durability: Double, enginePower: Double, wheelTurn: Double, nextWaypointIndex: Int, nextWaypointX: Int, nextWaypointY: Int, finishedTrack: Boolean) : super(id, mass, x, y, speedX, speedY, angle, angularSpeed, width, height, playerId, teammateIndex, teammate, type, projectileCount, nitroChargeCount, oilCanisterCount, remainingProjectileCooldownTicks, remainingNitroCooldownTicks, remainingOilCooldownTicks, remainingNitroTicks, remainingOiledTicks, durability, enginePower, wheelTurn, nextWaypointIndex, nextWaypointX, nextWaypointY, finishedTrack) {}
+    private var mys: MyKStrategy
 
-    constructor(other: Car) : super(other) {}
-
-    private lateinit var mys: MyKStrategy
+    public var movedDistance: Double = 0.0
 
     constructor(other: Car, mys: MyKStrategy) : super(other) {
         this.mys = mys
     }
 
+
     fun apply(move: Move, mys: MyKStrategy) {
         enginePower = move.enginePower
 
-        val origSpeedVector = speedVector()
         var speedVector = speedVector()
+
+        movedDistance += speedVector.length()
 
         val isMovingForward = move.enginePower > 0
 
@@ -48,7 +47,7 @@ class CarExt : Car {
 
     fun calcNextWaypoint() {
         this.nextWaypointIndex++
-        runningDistance = runningDistance + 100;
+        scoreValue = scoreValue + 100;
         if (mys.world.waypoints.size == nextWaypointIndex) {
             nextWaypointIndex = 0
         }
@@ -61,7 +60,7 @@ class CarExt : Car {
         var next = Point2D(nextWaypointX.toDouble() + 0.5, nextWaypointY.toDouble() + 0.5).mul(mys.game.trackTileSize)
 
         var bonus = (1 - next.getDistance(this) / prev.getDistance(next)) * 100
-        return runningDistance + bonus
+        return scoreValue + bonus
     }
 
     private fun getPrevWaypoint(): Point2D {

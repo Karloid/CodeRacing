@@ -15,5 +15,6 @@ class SimContext {
     lateinit var firstMove: Move
     var score: Double = 0.0
     var collisions: Boolean = false
+    var isValid: Boolean = true
 
 }

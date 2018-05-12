@@ -80,7 +80,7 @@ class MyKStrategy : Strategy {
             }
             cntx.score = evaluate(cntx);
 
-            if (cntx.score > bestScore) { //TODO do not pick solution if it is too short
+            if (cntx.isValid && cntx.score > bestScore) { //TODO do not pick solution if it is too short
                 bestScore = cntx.score
                 bestCntx = cntx;
                 log("best score " + Utils.format(bestScore))
@@ -108,12 +108,14 @@ class MyKStrategy : Strategy {
         } else if (i == 2) {
             move1.wheelTurn = 1.0
         } else if (i in 3..10) {
-            move1.enginePower = -1.0 
+            move1.enginePower = -1.0
         }
         return move1
     }
 
     private fun evaluate(cntx: SimContext): Double {
+        cntx.isValid = cntx.self.movedDistance > game.carWidth
+        
         return cntx.self.getFinalEvaluation();
     }
 

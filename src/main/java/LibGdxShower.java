@@ -102,14 +102,28 @@ public class LibGdxShower implements ApplicationListener {
         if (data == null) {
             return;
         }
+
+        int[][] waypoints = data.world.getWaypoints();
+
         float tileSize = (float) data.game.getTrackTileSize();
         TileType[][] tilesXY = data.world.getTilesXY();
         for (int x = 0, tilesXYLength = tilesXY.length; x < tilesXYLength; x++) {
             TileType[] columns = tilesXY[x];
             for (int y = 0, columnsLength = columns.length; y < columnsLength; y++) {
                 TileType tile = columns[y];
-                shapes.setColor(tile != TileType.EMPTY ? Color.GRAY : Color.WHITE);
-                shapes.rect(tileToReal(data, x), tileToReal(data, y), tileSize, tileSize);
+                if (tile != TileType.EMPTY) {
+                    shapes.setColor(Color.GRAY);
+                    for (int[] waypoint : waypoints) {
+                        if (waypoint[0] == x && waypoint[1] == y) {
+                            shapes.setColor(Color.DARK_GRAY);
+                            break;
+                        }
+                    }
+
+
+                    shapes.rect(tileToReal(data, x), tileToReal(data, y), tileSize, tileSize);
+                }
+
             }
         }
 

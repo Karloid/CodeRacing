@@ -3,9 +3,13 @@ import model.Game;
 import model.Move;
 import model.World;
 
+import java.util.List;
+
 public class LibGdxDataToPaint {
     public Move move;
     public Car mainUnit;
     public Game game;
     public World world;
+    public List<SimContext> allSimContexts;
+    public SimContext bestSimContext;
 }

@@ -1,4 +1,5 @@
 import model.Unit;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,10 @@ public class Point2D {
 
     public Point2D(double x, double y, PolygonsWorld context) {
         this((int) x, (int) y, context);
+    }
+
+    public Point2D(@NotNull Unit self) {
+        this(self.x, self.y);
     }
 
     public void setX(int x) {

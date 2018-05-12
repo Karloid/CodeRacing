@@ -3,6 +3,7 @@ import model.Game
 import model.Move
 import model.World
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MyKStrategy : Strategy {
@@ -55,40 +56,59 @@ class MyKStrategy : Strategy {
         nextWaypointY = (self.nextWaypointY + 0.5) * game.trackTileSize
     }
 
+    public var allSimContexts: MutableList<SimContext> = ArrayList()
+
+    public var bestSimContext: SimContext = SimContext()
+
     private fun simMove() {
+        allSimContexts = ArrayList()
         var bestScore = -100_000.0
-        var bestMove = Move()
+        var bestCntx = SimContext()
+
         for (i in 1..100) {   //TODO visualise
-            val selfCopy = toExtSelf(self);
-            val firstMove = randomMove();
-            var move = firstMove;
+
+            val cntx = SimContext();
+            allSimContexts.add(cntx)
+            cntx.self = toExtSelf(self);
+            cntx.firstMove = randomMove();
+            var move = cntx.firstMove;
             for (j in 1..100) {
-                selfCopy.apply(move)
-                play(selfCopy)
+                cntx.self.apply(move)
+                play(cntx)
                 move = randomMove()
             }
-            val score = evaluate(selfCopy);
+            cntx.score = evaluate(cntx);
 
-            if (score > bestScore) {
-                bestScore = score
-                bestMove = firstMove;
+            if (cntx.score > bestScore) {
+                bestScore = cntx.score
+                bestCntx = cntx;
                 log("best score " + Utils.format(bestScore))
             }
         }
 
+        bestSimContext = bestCntx;
+
+        allSimContexts.remove(bestSimContext)
+
         currentMove.apply {
-            wheelTurn = bestMove.wheelTurn
-            enginePower = bestMove.enginePower
+            wheelTurn = bestCntx.firstMove.wheelTurn
+            enginePower = bestCntx.firstMove.enginePower
             //TODO other
         }
 
     }
 
-    private fun evaluate(selfCopy: CarExt): Double {
-        return selfCopy.getFinalEvaluation();
+    private fun evaluate(cntx: SimContext): Double {
+        return cntx.self.getFinalEvaluation();
     }
 
-    private fun play(car: CarExt) {
+    private fun play(context: SimContext) {
+        val car = context.self
+        playCar(car)
+        context.afterPlay()
+    }
+
+    private fun playCar(car: CarExt) {
         car.x += car.speedX;
         car.y += car.speedY;
         //TODO check collisions

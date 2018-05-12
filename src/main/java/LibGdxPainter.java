@@ -26,6 +26,9 @@ public class LibGdxPainter implements MyStrategyPainter {
 
         data.mainUnit = mys.self;
 
+        data.allSimContexts = mys.getAllSimContexts();
+        data.bestSimContext = mys.getBestSimContext();
+
         shower.setObjects(data);
     }
 

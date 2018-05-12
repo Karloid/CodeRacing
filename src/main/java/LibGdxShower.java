@@ -73,6 +73,7 @@ public class LibGdxShower implements ApplicationListener {
         if (!resized && data != null) {
             resized = true;
             float camWidth = (float) (data.game.getWorldWidth() * data.game.getTrackTileSize());
+            camWidth = camWidth / 2;
             //You probably want to keep the aspect ration of the window
             float camHeight = camWidth * ((float) Runner.LIBGDX_WIDTH / (float) Runner.LIBGDX_WIDTH);
 
@@ -112,6 +113,27 @@ public class LibGdxShower implements ApplicationListener {
 
         drawCar(data, data.mainUnit);
 
+        drawContexts(data);
+
+    }
+
+    private void drawContexts(LibGdxDataToPaint data) {
+        if (data.bestSimContext == null) {
+            return;
+        }
+        shapes.setColor(Color.CYAN);
+        for (SimContext allSimContext : data.allSimContexts) {
+            drawMoves(allSimContext);
+        }
+
+        shapes.setColor(Color.BLUE);
+        drawMoves(data.bestSimContext);
+    }
+
+    private void drawMoves(SimContext allSimContext) {
+        for (Point2D p : allSimContext.getMoves()) {
+            shapes.rect((float) p.x, (float) p.y, 4, 4);
+        }
     }
 
     private void drawCar(LibGdxDataToPaint data, Car car) {

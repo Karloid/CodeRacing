@@ -35,7 +35,7 @@ class CarExt : Car {
         }
         //speedVector = speedVector.mul(2.0)
 
-        var turn = mys.game.carWheelTurnChangePerTick
+        var turn = mys.game.carWheelTurnChangePerTick * 0.7
         if (move.wheelTurn < 0) {
             turn = -turn;
         }

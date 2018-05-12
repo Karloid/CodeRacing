@@ -90,7 +90,14 @@ class MyKStrategy : Strategy {
             allSimContexts.remove(bestSimContext)
         } else {
             bestCntx = SimContext()
-            bestCntx.firstMove = randomMove(null).apply { enginePower = -1.0 }
+            bestCntx.firstMove = randomMove(null).apply {
+                if (world.tick % 10 > 5) {
+                    enginePower = -1.0
+                } else {
+                    enginePower = 1.0
+                }
+            }
+            bestSimContext = bestCntx
         }
         currentMove.apply {
             wheelTurn = bestCntx.firstMove.wheelTurn

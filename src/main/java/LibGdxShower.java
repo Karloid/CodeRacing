@@ -120,7 +120,6 @@ public class LibGdxShower implements ApplicationListener {
                         }
                     }
 
-
                     shapes.rect(tileToReal(data, x), tileToReal(data, y), tileSize, tileSize);
                 }
 
@@ -128,6 +127,12 @@ public class LibGdxShower implements ApplicationListener {
         }
 
         drawCar(data, data.mainUnit);
+
+        for (Car car : data.world.getCars()) {
+            if (data.world.getMyPlayer().getId() != car.getPlayerId()) {
+                drawCar(data, car);
+            }
+        }
 
         drawContexts(data);
 
@@ -166,7 +171,7 @@ public class LibGdxShower implements ApplicationListener {
     }
 
     private void drawCar(LibGdxDataToPaint data, Car car) {
-        shapes.setColor(Color.GREEN);
+        shapes.setColor(data.world.getMyPlayer().getId() == car.getPlayerId() ? Color.GREEN : Color.BLUE);
         float x = (float) car.x;
         float y = (float) car.y;
 

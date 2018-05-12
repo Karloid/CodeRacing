@@ -1,6 +1,6 @@
 public class LibGdxPainter implements MyStrategyPainter {
     private final LibGdxShower shower;
-    private MyKStrategy myStrategy;
+    private MyKStrategy mys;
     private LibGdxDataToPaint data;
 
     public LibGdxPainter(LibGdxShower shower) {
@@ -10,18 +10,21 @@ public class LibGdxPainter implements MyStrategyPainter {
     @Override
     public void onStartTick() {
         data = new LibGdxDataToPaint();
-
+        data.game = mys.game;
     }
 
     @Override
     public void setMYS(MyKStrategy myStrategy) {
-
-        this.myStrategy = myStrategy;
+        this.mys = myStrategy;
     }
 
     @Override
     public void onEndTick() {
-        data.move = myStrategy.getCurrentMove();
+        data.move = mys.getCurrentMove();
+
+        data.world = mys.world;
+
+        data.mainUnit = mys.self;
 
         shower.setObjects(data);
     }

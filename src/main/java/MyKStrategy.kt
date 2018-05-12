@@ -1,4 +1,3 @@
-import com.badlogic.gdx.math.MathUtils.random
 import model.Car
 import model.Game
 import model.Move
@@ -10,7 +9,7 @@ class MyKStrategy : Strategy {
 
     public lateinit var painter: MyStrategyPainter
 
-    private lateinit var self: Car
+    public lateinit var self: Car
     lateinit var world: World
     lateinit var game: Game
     private lateinit var currentMove: Move
@@ -22,20 +21,22 @@ class MyKStrategy : Strategy {
         onTickStart(self, world, game, move)
         onInitStrategy()
 
-        if (world.tick < 200) {
-            return
-        }
+
         painter.onStartTick()
 
-        simMove();
+        if (world.tick > 200) {
+            simMove();
 
-        log(Utils.format(currentMove.wheelTurn) + " " + Utils.format(currentMove.enginePower))
+            log(Utils.format(currentMove.wheelTurn) + " " + Utils.format(currentMove.enginePower))
+        }
         painter.onEndTick()
     }
 
+    private var rndm: Random? = null
+
     private fun onInitStrategy() {
-        if (random == null) {
-            random = Random()
+        if (rndm == null) {
+            rndm = Random()
             painter.onInitializeStrategy()
         }
     }

@@ -8,6 +8,7 @@ import model.PlayerContext;
 import java.io.IOException;
 
 public final class Runner {
+    public static final int LIBGDX_WIDTH = 700;
     private final RemoteProcessClient remoteProcessClient;
     private final String token;
 
@@ -77,8 +78,8 @@ public final class Runner {
         cfg.foregroundFPS = 60;
         cfg.title = "CodeRacing";
         cfg.useGL30 = false;
-        cfg.width = 700;
-        cfg.height = 700;
+        cfg.width = LIBGDX_WIDTH;
+        cfg.height = LIBGDX_WIDTH;
         cfg.x = 1920;
         cfg.y = -100;
 

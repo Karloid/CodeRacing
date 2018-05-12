@@ -29,7 +29,7 @@ public class LibGdxPainter implements MyStrategyPainter {
         data.allSimContexts = mys.getAllSimContexts();
         data.bestSimContext = mys.getBestSimContext();
 
-        data.carPoints = mys.getCarPoints(data.mainUnit);
+        data.carPoints = MYSHelperKt.getCarPoints(data.mainUnit, data.game);
 
         shower.setObjects(data);
     }

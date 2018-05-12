@@ -1,6 +1,4 @@
 import model.*
-import java.lang.Math.cos
-import java.lang.Math.sin
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -104,7 +102,7 @@ class MyKStrategy : Strategy {
     private fun getNextMove(i: Int, move: Move?): Move {
         var move1 = move
         move1 = randomMove(move1)
-        
+
         if (i == 1) {
             move1.wheelTurn = -1.0
         } else if (i == 2) {
@@ -131,7 +129,7 @@ class MyKStrategy : Strategy {
         car.x += car.speedX;
         car.y += car.speedY;
         //TODO check collisions
-        if (!noColisions(car)) {
+        if (!noCollisions(car)) {
             car.x = ox
             car.y = oy
             car.speedX = 0.0;
@@ -146,97 +144,24 @@ class MyKStrategy : Strategy {
         }
     }
 
-    public fun noColisions(car: CarExt): Boolean {
-        val carPoints = getCarPoints(car)
+    private fun noCollisions(car: CarExt): Boolean {
+        val carPoints = getCarPoints(car, game)
 
         val tileSize = game.trackTileSize
         val margin = game.trackTileMargin
 
         for (p in carPoints) {
-            var currentTile: TileType = world.tilesXY[(p.x / tileSize).toInt()][(p.y / tileSize).toInt()]
-
-            val normX = p.x % tileSize;
-            val normY = p.y % tileSize;
-            when (currentTile) {
-                TileType.EMPTY -> {
-                }
-                TileType.VERTICAL -> {
-                    if (isLeftW(normX, margin) || isRightW(tileSize, margin, normX)) {
-                        return false;
-                    }
-                }
-                TileType.HORIZONTAL -> {
-                    if (isTopW(normY, margin) || isBottomW(normY, margin, tileSize)) {
-                        return false;
-                    }
-                }
-                TileType.LEFT_TOP_CORNER -> {
-                    if (isLeftW(normX, margin) || isTopW(normY, margin) || isRBCor(normX, normY, margin, tileSize)) {
-                        return false;
-                    }
-                }
-                TileType.RIGHT_TOP_CORNER -> {
-                    if (isRightW(tileSize, normX, margin) || isTopW(normY, margin) || isLBCor(normX, normY, margin, tileSize)) {
-                        return false;
-                    }
-                }
-                TileType.LEFT_BOTTOM_CORNER -> {
-                    //TODO
-                }
-                TileType.RIGHT_BOTTOM_CORNER -> {
-                    //TODO
-                }
-                TileType.LEFT_HEADED_T -> TODO()
-                TileType.RIGHT_HEADED_T -> TODO()
-                TileType.TOP_HEADED_T -> TODO()
-                TileType.BOTTOM_HEADED_T -> TODO()
-                TileType.CROSSROADS -> TODO()
-                TileType.UNKNOWN -> TODO()
+            val x = (p.x / tileSize).toInt()
+            val y = (p.y / tileSize).toInt()
+            if (x >= game.worldWidth || y >= game.worldHeight || y < 0 || x < 0) {
+                return false
+            }
+            val currentTile: TileType = world.tilesXY[x][y]
+            if (hasCollisions(p, currentTile, tileSize, margin)) {
+                return false
             }
         }
         return true
-    }
-
-    private fun isBottomW(normY: Double, margin: Double, tileSize: Double) = normY > tileSize - margin
-
-    private fun isRBCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
-        return Point2D.getDistance(normX, normY, tileSize, tileSize) < margin
-    }
-
-    private fun isLBCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
-        return Point2D.getDistance(normX, normY, 0.0, tileSize) < margin
-    }
-
-    private fun isRightW(tileSize: Double, margin: Double, normX: Double) = tileSize - margin < normX
-
-    private fun isLeftW(normX: Double, margin: Double) = normX < margin
-
-    private fun isTopW(normY: Double, margin: Double) = normY < margin
-
-    public fun getCarPoints(car: Car): ArrayList<Point2D> {
-        val carPoints = ArrayList<Point2D>()
-        val w = game.carWidth / 2
-        val h = game.carHeight / 2
-        carPoints.add(Point2D(car.x + w, car.y + h))
-        carPoints.add(Point2D(car.x - w, car.y + h))
-        carPoints.add(Point2D(car.x - w, car.y - h))
-        carPoints.add(Point2D(car.x + w, car.y - h))
-
-        for (p in carPoints) {
-            // translate point to origin
-            val tempX = p.x - car.x
-            val tempY = p.y - car.y
-
-            // now apply rotation
-            val rotatedX = tempX * cos(car.angle) - tempY * sin(car.angle)
-            val rotatedY = tempX * sin(car.angle) + tempY * cos(car.angle)
-
-            // translate back
-            p.x = rotatedX + car.x
-            p.y = rotatedY + car.y
-
-        }
-        return carPoints
     }
 
     private fun toExtSelf(self: Car): CarExt {
@@ -246,7 +171,7 @@ class MyKStrategy : Strategy {
 
     private fun randomMove(prevMove: Move?): Move {
         val m = Move()
-        m.enginePower = 0.5
+        m.enginePower = 1.0
         if (prevMove == null) {
             m.wheelTurn = Math.random() * 2 - 1
         } else {

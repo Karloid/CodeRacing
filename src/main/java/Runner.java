@@ -80,7 +80,7 @@ public final class Runner {
         cfg.useGL30 = false;
         cfg.width = LIBGDX_WIDTH;
         cfg.height = LIBGDX_WIDTH;
-        cfg.x = 1920 + 600;
+        cfg.x = 1920 + 1000;
         cfg.y = -100;
 
         LibGdxShower shower = new LibGdxShower();

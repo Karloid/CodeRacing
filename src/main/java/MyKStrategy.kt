@@ -1,10 +1,15 @@
+import com.badlogic.gdx.math.MathUtils.random
 import model.Car
 import model.Game
 import model.Move
 import model.World
+import java.util.*
 
 
 class MyKStrategy : Strategy {
+
+    public lateinit var painter: MyStrategyPainter
+
     private lateinit var self: Car
     lateinit var world: World
     lateinit var game: Game
@@ -15,13 +20,24 @@ class MyKStrategy : Strategy {
 
     override fun move(self: Car, world: World, game: Game, move: Move) {
         onTickStart(self, world, game, move)
+        onInitStrategy()
 
         if (world.tick < 200) {
             return
         }
+        painter.onStartTick()
+
         simMove();
 
         log(Utils.format(currentMove.wheelTurn) + " " + Utils.format(currentMove.enginePower))
+        painter.onEndTick()
+    }
+
+    private fun onInitStrategy() {
+        if (random == null) {
+            random = Random()
+            painter.onInitializeStrategy()
+        }
     }
 
     private fun log(msg: String) {
@@ -94,6 +110,10 @@ class MyKStrategy : Strategy {
         m.enginePower = 0.1
         m.wheelTurn = Math.random() * 2 - 1
         return m
+    }
+
+    fun getCurrentMove(): Move {
+        return currentMove
     }
 }
 

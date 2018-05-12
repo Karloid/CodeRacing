@@ -33,7 +33,7 @@ public final class MyStrategy implements Strategy {
     private Car self;
     private World world;
     private Game game;
-    private Move move;
+    public Move move;
 
 
     private double speedModule;

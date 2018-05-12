@@ -1,4 +1,9 @@
-import model.*;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import model.Car;
+import model.Game;
+import model.Move;
+import model.PlayerContext;
 
 import java.io.IOException;
 
@@ -8,7 +13,7 @@ public final class Runner {
 
     public static void main(String[] args) throws IOException {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(2300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -34,7 +39,10 @@ public final class Runner {
             Strategy[] strategies = new Strategy[teamSize];
 
             for (int strategyIndex = 0; strategyIndex < teamSize; ++strategyIndex) {
-                strategies[strategyIndex] = new MyKStrategy();
+                MyKStrategy strategy = new MyKStrategy();
+
+                strategies[strategyIndex] = strategy;
+                addShower(strategy);
             }
 
             PlayerContext playerContext;
@@ -62,5 +70,21 @@ public final class Runner {
         } finally {
             remoteProcessClient.close();
         }
+    }
+
+    private void addShower(MyKStrategy strategy) {
+        LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+        cfg.foregroundFPS = 60;
+        cfg.title = "CodeRacing";
+        cfg.useGL30 = false;
+        cfg.width = 700;
+        cfg.height = 700;
+        cfg.x = 1920;
+        cfg.y = -100;
+
+        LibGdxShower shower = new LibGdxShower();
+        new LwjglApplication(shower, cfg);
+        strategy.painter = new LibGdxPainter(shower);
+        strategy.painter.setMYS(strategy);
     }
 }

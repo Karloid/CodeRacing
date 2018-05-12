@@ -39,6 +39,9 @@ class CarExt : Car {
         if (move.wheelTurn < 0) {
             turn = -turn;
         }
+        if (enginePower < 0) {
+            turn = -turn;
+        }
 
         speedVector = speedVector.rotate(turn)
         speedX = speedVector.x

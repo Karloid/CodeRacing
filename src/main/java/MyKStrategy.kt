@@ -115,9 +115,9 @@ class MyKStrategy : Strategy {
             move1.wheelTurn = -1.0
         } else if (i == 2) {
             move1.wheelTurn = 1.0
-        } else if (i == 2 || i == 3) {
+        } else if (i == 3 || i == 4) {
             move1.enginePower = -1.0
-            if (i == 2) {
+            if (i == 3) {
                 move1.wheelTurn = 1.0
             } else {
                 move1.wheelTurn = -1.0
@@ -128,7 +128,7 @@ class MyKStrategy : Strategy {
     }
 
     private fun evaluate(cntx: SimContext): Double {
-        cntx.isValid = cntx.self.movedDistance > game.carWidth
+        cntx.isValid = cntx.self.movedDistance > game.carWidth * 1.2
 
         var eval = cntx.self.getFinalEvaluation()
         if (cntx.isMovingBackward) {

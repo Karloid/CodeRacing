@@ -21,8 +21,13 @@ class CarExt : Car {
         val origSpeedVector = speedVector()
         var speedVector = speedVector()
 
-        if (speedVector.length() < 0.5) {
-            speedVector = speedVector.length(1.0)
+        val isMovingForward = move.enginePower > 0
+
+        val speedIncreaseByTick = Point2D(0.25, 0.0).rotate(angle)
+        if (isMovingForward) {
+            speedVector = speedVector.add(speedIncreaseByTick)
+        } else {
+            speedVector = speedVector.sub(speedIncreaseByTick)
         }
         //speedVector = speedVector.mul(2.0)
 

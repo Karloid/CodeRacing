@@ -97,3 +97,15 @@ fun getCarPoints(car: Car, game: Game): ArrayList<Point2D> {
     }
     return carPoints
 }
+
+public fun getAngleDelta(minAngle: Double, maxAngle: Double, angleToPoint: Double): Double {
+    var result = Math.min(Math.abs(angleToPoint - minAngle), Math.abs(angleToPoint - maxAngle))
+    if (result < Math.PI / 3) {
+        return result
+    }
+
+    result = Math.min(result, Math.abs(-Math.PI - minAngle) + Math.PI - angleToPoint)
+    result = Math.min(result, Math.abs(-Math.PI - angleToPoint) + Math.PI - maxAngle)
+
+    return result
+}

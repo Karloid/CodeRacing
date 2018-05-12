@@ -80,7 +80,7 @@ class MyKStrategy : Strategy {
             }
             cntx.score = evaluate(cntx);
 
-            if (cntx.score > bestScore) {
+            if (cntx.score > bestScore) { //TODO do not pick solution if it is too short
                 bestScore = cntx.score
                 bestCntx = cntx;
                 log("best score " + Utils.format(bestScore))
@@ -106,8 +106,9 @@ class MyKStrategy : Strategy {
         if (i == 1) {
             move1.wheelTurn = -1.0
         } else if (i == 2) {
-            move1 = randomMove(move1)
             move1.wheelTurn = 1.0
+        } else if (i in 3..10) {
+            move1.enginePower = -1.0 
         }
         return move1
     }

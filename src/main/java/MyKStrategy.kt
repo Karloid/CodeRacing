@@ -108,8 +108,13 @@ class MyKStrategy : Strategy {
             move1.wheelTurn = -1.0
         } else if (i == 2) {
             move1.wheelTurn = 1.0
-        } else if (i in 3..10) {
+        } else if (i == 2 || i == 3) {
             move1.enginePower = -1.0
+            if (i == 2) {
+                move1.wheelTurn = 1.0
+            } else {
+                move1.wheelTurn = -1.0
+            }
             cntx.isMovingBackward = true
         }
         return move1

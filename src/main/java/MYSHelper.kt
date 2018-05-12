@@ -38,10 +38,26 @@ public fun hasCollisions(p: Point2D, currentTile: TileType, tileSize: Double, ma
                 return true;
             }
         }
-        TileType.LEFT_HEADED_T -> TODO()
-        TileType.RIGHT_HEADED_T -> TODO()
-        TileType.TOP_HEADED_T -> TODO()
-        TileType.BOTTOM_HEADED_T -> TODO()
+        TileType.LEFT_HEADED_T -> {
+            if (isRightW(margin, normX, tileSize) || isLTCor(normX, normY, margin, tileSize) || isLBCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
+        }
+        TileType.RIGHT_HEADED_T -> {
+            if (isLeftW(normX, margin) || isRTCor(normX, normY, margin, tileSize) || isRBCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
+        }
+        TileType.TOP_HEADED_T -> {
+            if (isLTCor(normX, normY, margin, tileSize) || isBottomW(normY, margin, tileSize) || isRTCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
+        }
+        TileType.BOTTOM_HEADED_T -> {
+            if (isTopW(normY, margin) || isLBCor(normX, normY, margin, tileSize) || isRBCor(normX, normY, margin, tileSize)) {
+                return true;
+            }
+        }
         TileType.CROSSROADS -> {
             if (isLTCor(normX, normY, margin, tileSize) || isLBCor(normX, normY, margin, tileSize) || isRTCor(normX, normY, margin, tileSize) || isRBCor(normX, normY, margin, tileSize)) {
                 return true;

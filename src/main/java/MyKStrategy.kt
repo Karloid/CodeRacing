@@ -30,11 +30,11 @@ class MyKStrategy : Strategy {
         painter.onEndTick()
     }
 
-    private var rndm: Random? = null
+    private var rndm: Random = Random()
 
     private fun onInitStrategy() {
         if (rndm == null) {
-            rndm = Random()
+
             painter.onInitializeStrategy()
         }
     }
@@ -60,8 +60,7 @@ class MyKStrategy : Strategy {
     private fun simMove() {
         allSimContexts = ArrayList()
         var bestScore = -100_000.0
-        var bestCntx = SimContext()
-        bestCntx.firstMove = randomMove(null)
+        var bestCntx: SimContext? = null
 
         for (i in 1..100) {   //TODO visualise
 
@@ -86,11 +85,13 @@ class MyKStrategy : Strategy {
                 log("best score " + Utils.format(bestScore))
             }
         }
-
-        bestSimContext = bestCntx;
-
-        allSimContexts.remove(bestSimContext)
-
+        if (bestCntx != null) {
+            bestSimContext = bestCntx;
+            allSimContexts.remove(bestSimContext)
+        } else {
+            bestCntx = SimContext()
+            bestCntx.firstMove = randomMove(null).apply { enginePower = -1.0 }
+        }
         currentMove.apply {
             wheelTurn = bestCntx.firstMove.wheelTurn
             enginePower = bestCntx.firstMove.enginePower
@@ -115,7 +116,7 @@ class MyKStrategy : Strategy {
 
     private fun evaluate(cntx: SimContext): Double {
         cntx.isValid = cntx.self.movedDistance > game.carWidth
-        
+
         return cntx.self.getFinalEvaluation();
     }
 
@@ -176,16 +177,25 @@ class MyKStrategy : Strategy {
         val m = Move()
         m.enginePower = 1.0
         if (prevMove == null) {
-            m.wheelTurn = Math.random() * 2 - 1
+            m.wheelTurn = rndm.nextDouble() * 2 - 1
         } else {
-            if (Math.random() > 0.5) {
+            if (rndm.nextBoolean()) {
                 m.wheelTurn += game.carWheelTurnChangePerTick
             } else {
                 m.wheelTurn -= game.carWheelTurnChangePerTick
             }
-            m.wheelTurn = Math.max(m.wheelTurn, -1.0)
-            m.wheelTurn = Math.min(m.wheelTurn, 1.0)
         }
+        if (rndm.nextBoolean()) {
+            m.enginePower -= game.carEnginePowerChangePerTick
+        } else {
+            m.enginePower += game.carEnginePowerChangePerTick
+        }
+
+        m.enginePower = Math.max(m.enginePower, -1.0)
+        m.enginePower = Math.min(m.enginePower, 1.0)
+
+        m.wheelTurn = Math.max(m.wheelTurn, -1.0)
+        m.wheelTurn = Math.min(m.wheelTurn, 1.0)
         return m
     }
 

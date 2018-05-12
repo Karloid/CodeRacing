@@ -142,16 +142,16 @@ public class LibGdxShower implements ApplicationListener {
         }
         shapes.setColor(Color.CYAN);
         for (SimContext allSimContext : data.allSimContexts) {
-            drawMoves(allSimContext);
+            drawMoves(allSimContext, 4);
         }
 
         shapes.setColor(Color.BLUE);
-        drawMoves(data.bestSimContext);
+        drawMoves(data.bestSimContext, 8);
     }
 
-    private void drawMoves(SimContext allSimContext) {
+    private void drawMoves(SimContext allSimContext, int width) {
         List<Point2D> points = allSimContext.getMoves();
-        drawLine(points, 4);
+        drawLine(points, width);
     }
 
     private void drawLine(List<Point2D> points, int width) {

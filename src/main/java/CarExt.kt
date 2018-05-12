@@ -14,7 +14,12 @@ class CarExt : Car {
 
 
     fun apply(move: Move, mys: MyKStrategy) {
-        enginePower = move.enginePower
+        if (move.enginePower > enginePower) {
+            enginePower += mys.game.carEnginePowerChangePerTick
+        } else {
+            enginePower -= mys.game.carEnginePowerChangePerTick
+        }
+
 
         var speedVector = speedVector()
 
@@ -22,7 +27,7 @@ class CarExt : Car {
 
         val isMovingForward = move.enginePower > 0
 
-        val speedIncreaseByTick = Point2D(0.25, 0.0).rotate(angle)
+        val speedIncreaseByTick = Point2D(0.25 * Math.abs(enginePower), 0.0).rotate(angle)
         if (isMovingForward) {
             speedVector = speedVector.add(speedIncreaseByTick)
         } else {

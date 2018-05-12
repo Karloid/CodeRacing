@@ -89,7 +89,10 @@ public class LibGdxShower implements ApplicationListener {
             return;
         }
 
-
+        camera.position.x = (float) data.mainUnit.x;
+        camera.position.y = (float) data.mainUnit.y;
+        camera.update();
+        applyCamera();
     }
 
     private void drawShapes(LibGdxDataToPaint data) {
@@ -106,12 +109,6 @@ public class LibGdxShower implements ApplicationListener {
                 shapes.rect(tileToReal(data, x), tileToReal(data, y), tileSize, tileSize);
             }
         }
-
-        for (int i = 0; i < Runner.LIBGDX_WIDTH / 100; i++) {
-            shapes.setColor(Color.RED);
-            shapes.rect(i * 100, 0, 10, 700);
-        }
-
 
         drawCar(data, data.mainUnit);
 

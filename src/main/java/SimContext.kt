@@ -14,5 +14,6 @@ class SimContext {
     lateinit var self: CarExt
     lateinit var firstMove: Move
     var score: Double = 0.0
+    var collisions: Boolean = false
 
 }

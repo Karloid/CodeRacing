@@ -1,7 +1,4 @@
-import model.Car
-import model.Game
-import model.Move
-import model.World
+import model.*
 import java.lang.Math.cos
 import java.lang.Math.sin
 import java.util.*
@@ -66,19 +63,22 @@ class MyKStrategy : Strategy {
         allSimContexts = ArrayList()
         var bestScore = -100_000.0
         var bestCntx = SimContext()
-        bestCntx.firstMove = randomMove()
+        bestCntx.firstMove = randomMove(null)
 
-        for (i in 1..10) {   //TODO visualise
+        for (i in 1..100) {   //TODO visualise
 
             val cntx = SimContext();
             allSimContexts.add(cntx)
             cntx.self = toExtSelf(self);
-            cntx.firstMove = randomMove();
+            cntx.firstMove = getNextMove(i, null);
             var move = cntx.firstMove;
-            for (j in 1..100) {
+            for (j in 1..400) {
                 cntx.self.apply(move, this)
                 play(cntx)
-                move = randomMove()
+                move = getNextMove(i, move)
+                if (cntx.collisions) {
+                    break
+                }
             }
             cntx.score = evaluate(cntx);
 
@@ -101,17 +101,30 @@ class MyKStrategy : Strategy {
 
     }
 
+    private fun getNextMove(i: Int, move: Move?): Move {
+        var move1 = move
+        move1 = randomMove(move1)
+        
+        if (i == 1) {
+            move1.wheelTurn = -1.0
+        } else if (i == 2) {
+            move1 = randomMove(move1)
+            move1.wheelTurn = 1.0
+        }
+        return move1
+    }
+
     private fun evaluate(cntx: SimContext): Double {
         return cntx.self.getFinalEvaluation();
     }
 
     private fun play(context: SimContext) {
         val car = context.self
-        playCar(car)
+        playCar(car, context)
         context.afterPlay()
     }
 
-    private fun playCar(car: CarExt) {
+    private fun playCar(car: CarExt, context: SimContext) {
         var ox = car.x
         var oy = car.y
 
@@ -123,6 +136,7 @@ class MyKStrategy : Strategy {
             car.y = oy
             car.speedX = 0.0;
             car.speedY = 0.0;
+            context.collisions = true
         } else {
             val tileSize = game.trackTileSize
             if (car.x >= car.nextWaypointX * tileSize && car.x <= car.nextWaypointX * tileSize + tileSize &&
@@ -135,9 +149,69 @@ class MyKStrategy : Strategy {
     public fun noColisions(car: CarExt): Boolean {
         val carPoints = getCarPoints(car)
 
-        carPoints.size
+        val tileSize = game.trackTileSize
+        val margin = game.trackTileMargin
+
+        for (p in carPoints) {
+            var currentTile: TileType = world.tilesXY[(p.x / tileSize).toInt()][(p.y / tileSize).toInt()]
+
+            val normX = p.x % tileSize;
+            val normY = p.y % tileSize;
+            when (currentTile) {
+                TileType.EMPTY -> {
+                }
+                TileType.VERTICAL -> {
+                    if (isLeftW(normX, margin) || isRightW(tileSize, margin, normX)) {
+                        return false;
+                    }
+                }
+                TileType.HORIZONTAL -> {
+                    if (isTopW(normY, margin) || isBottomW(normY, margin, tileSize)) {
+                        return false;
+                    }
+                }
+                TileType.LEFT_TOP_CORNER -> {
+                    if (isLeftW(normX, margin) || isTopW(normY, margin) || isRBCor(normX, normY, margin, tileSize)) {
+                        return false;
+                    }
+                }
+                TileType.RIGHT_TOP_CORNER -> {
+                    if (isRightW(tileSize, normX, margin) || isTopW(normY, margin) || isLBCor(normX, normY, margin, tileSize)) {
+                        return false;
+                    }
+                }
+                TileType.LEFT_BOTTOM_CORNER -> {
+                    //TODO
+                }
+                TileType.RIGHT_BOTTOM_CORNER -> {
+                    //TODO
+                }
+                TileType.LEFT_HEADED_T -> TODO()
+                TileType.RIGHT_HEADED_T -> TODO()
+                TileType.TOP_HEADED_T -> TODO()
+                TileType.BOTTOM_HEADED_T -> TODO()
+                TileType.CROSSROADS -> TODO()
+                TileType.UNKNOWN -> TODO()
+            }
+        }
         return true
     }
+
+    private fun isBottomW(normY: Double, margin: Double, tileSize: Double) = normY > tileSize - margin
+
+    private fun isRBCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
+        return Point2D.getDistance(normX, normY, tileSize, tileSize) < margin
+    }
+
+    private fun isLBCor(normX: Double, normY: Double, margin: Double, tileSize: Double): Boolean {
+        return Point2D.getDistance(normX, normY, 0.0, tileSize) < margin
+    }
+
+    private fun isRightW(tileSize: Double, margin: Double, normX: Double) = tileSize - margin < normX
+
+    private fun isLeftW(normX: Double, margin: Double) = normX < margin
+
+    private fun isTopW(normY: Double, margin: Double) = normY < margin
 
     public fun getCarPoints(car: Car): ArrayList<Point2D> {
         val carPoints = ArrayList<Point2D>()
@@ -170,10 +244,20 @@ class MyKStrategy : Strategy {
         return carExt
     }
 
-    private fun randomMove(): Move {
+    private fun randomMove(prevMove: Move?): Move {
         val m = Move()
         m.enginePower = 0.5
-        m.wheelTurn = Math.random() * 2 - 1
+        if (prevMove == null) {
+            m.wheelTurn = Math.random() * 2 - 1
+        } else {
+            if (Math.random() > 0.5) {
+                m.wheelTurn += game.carWheelTurnChangePerTick
+            } else {
+                m.wheelTurn -= game.carWheelTurnChangePerTick
+            }
+            m.wheelTurn = Math.max(m.wheelTurn, -1.0)
+            m.wheelTurn = Math.min(m.wheelTurn, 1.0)
+        }
         return m
     }
 

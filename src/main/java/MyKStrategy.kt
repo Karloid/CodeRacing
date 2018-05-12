@@ -64,8 +64,9 @@ class MyKStrategy : Strategy {
         allSimContexts = ArrayList()
         var bestScore = -100_000.0
         var bestCntx = SimContext()
+        bestCntx.firstMove = randomMove()
 
-        for (i in 1..100) {   //TODO visualise
+        for (i in 1..10) {   //TODO visualise
 
             val cntx = SimContext();
             allSimContexts.add(cntx)
@@ -73,7 +74,7 @@ class MyKStrategy : Strategy {
             cntx.firstMove = randomMove();
             var move = cntx.firstMove;
             for (j in 1..100) {
-                cntx.self.apply(move)
+                cntx.self.apply(move, this)
                 play(cntx)
                 move = randomMove()
             }

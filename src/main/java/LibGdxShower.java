@@ -73,7 +73,7 @@ public class LibGdxShower implements ApplicationListener {
         if (!resized && data != null) {
             resized = true;
             float camWidth = (float) (data.game.getWorldWidth() * data.game.getTrackTileSize());
-            camWidth = camWidth / 2;
+            camWidth = (float) (camWidth / 1.2);
             //You probably want to keep the aspect ration of the window
             float camHeight = camWidth * ((float) Runner.LIBGDX_WIDTH / (float) Runner.LIBGDX_WIDTH);
 
@@ -131,7 +131,12 @@ public class LibGdxShower implements ApplicationListener {
     }
 
     private void drawMoves(SimContext allSimContext) {
+        Point2D prevP = null;
         for (Point2D p : allSimContext.getMoves()) {
+            if (prevP != null) {
+                shapes.rectLine((float) prevP.x, (float) prevP.y, (float) p.x, (float) p.y, 4);
+            }
+            prevP = p;
             shapes.rect((float) p.x, (float) p.y, 4, 4);
         }
     }

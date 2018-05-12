@@ -15,12 +15,23 @@ class CarExt : Car {
         this.mys = mys
     }
 
-    fun apply(move: Move) {
+    fun apply(move: Move, mys: MyKStrategy) {
         enginePower = move.enginePower
 
         val origSpeedVector = speedVector()
         var speedVector = speedVector()
-        speedVector = speedVector.rotate(move.wheelTurn)
+
+        if (speedVector.length() < 0.5) {
+            speedVector = speedVector.length(1.0)
+        }
+        //speedVector = speedVector.mul(2.0)
+
+        var turn = mys.game.carWheelTurnChangePerTick
+        if (move.wheelTurn > 0) {
+            turn = -turn;
+        }
+
+        speedVector = speedVector.rotate(turn)
         speedX = speedVector.x
         speedY = speedVector.y
         var i = 10

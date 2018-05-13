@@ -155,7 +155,7 @@ public class LibGdxShower implements ApplicationListener {
     }
 
     private void drawMoves(SimContext allSimContext, int width) {
-        List<Point2D> points = allSimContext.getMoves();
+        List<Point2D> points = allSimContext.getPos();
         drawLine(points, width);
     }
 

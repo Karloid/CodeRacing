@@ -62,15 +62,15 @@ class MyKStrategy : Strategy {
         var bestScore = -100_000.0
         var bestCntx: SimContext? = null
 
-        for (i in 1..25) {   //TODO visualise
+        for (i in 1..160) {   //TODO visualise
 
             val cntx = SimContext();
             allSimContexts.add(cntx)
             cntx.self = toExtSelf(self);
             cntx.firstMove = getNextMove(i, null, cntx);
             var move = cntx.firstMove;
-            for (j in 1..400) {
-                cntx.self.apply(move, this)
+            for (j in 1..700) {
+                cntx.apply(move!!, this)
                 play(cntx)
                 move = getNextMove(i, move, cntx)
                 if (cntx.collisions) {
@@ -100,8 +100,8 @@ class MyKStrategy : Strategy {
             bestSimContext = bestCntx
         }
         currentMove.apply {
-            wheelTurn = bestCntx.firstMove.wheelTurn
-            enginePower = bestCntx.firstMove.enginePower
+            wheelTurn = bestCntx.firstMove!!.wheelTurn
+            enginePower = bestCntx.firstMove!!.enginePower
             //TODO other
         }
 
@@ -112,7 +112,7 @@ class MyKStrategy : Strategy {
         move1 = randomMove(move1)
 
         val n = 0
-        val spread = 5
+        val spread = 20
         val to = n + spread
 
         if (i == 1) {
@@ -139,7 +139,7 @@ class MyKStrategy : Strategy {
 
         var eval = cntx.self.getFinalEvaluation()
         if (cntx.isMovingBackward) {
-            eval = (100 - eval) / 10
+            eval = (100 - eval) / 100
         }
         return eval;
     }
@@ -204,9 +204,9 @@ class MyKStrategy : Strategy {
             m.wheelTurn = rndm.nextDouble() * 2 - 1
         } else {
             if (rndm.nextBoolean()) {
-                m.wheelTurn += game.carWheelTurnChangePerTick
+                m.wheelTurn = prevMove.wheelTurn + game.carWheelTurnChangePerTick
             } else {
-                m.wheelTurn -= game.carWheelTurnChangePerTick
+                m.wheelTurn = prevMove.wheelTurn - game.carWheelTurnChangePerTick
             }
         }
         if (rndm.nextBoolean()) {

@@ -32,9 +32,16 @@ class CarExt : Car {
         } else {
             speedVector = speedVector.sub(speedIncreaseByTick)
         }
-        //speedVector = speedVector.mul(2.0)
 
         var turn = mys.game.carWheelTurnChangePerTick * 0.7
+
+        if (wheelTurn > move.wheelTurn) {
+            wheelTurn -= turn
+        } else {
+            wheelTurn += turn
+        }
+
+/*        var turn = mys.game.carWheelTurnChangePerTick * 0.7
 
         if (wheelTurn > move.wheelTurn) {
             wheelTurn -= turn
@@ -47,18 +54,59 @@ class CarExt : Car {
         if (enginePower < 0) {
             turn = -turn;
         }
-        /*TODO Относительный поворот руля/колёс car.wheelTurn. Значение находится в интервале от −1.0 до 1.0 и,
+        *//*TODO Относительный поворот руля/колёс car.wheelTurn. Значение находится в интервале от −1.0 до 1.0 и,
             как и car.enginePower, не может изменяться мгновенно, а двигается к желаемому значению
             move.wheelTurn со скоростью, не превышающей по модулю 0.05 за тик. Ненулевой поворот колёс
             порождает составляющую угловой скорости кодемобиля, значение которой прямо пропорционально
             car.wheelTurn, коэффициенту game.carAngularSpeedFactor, а также скалярному произведению
             вектора скорости кодемобиля и единичного вектора, направление которого совпадает с направлением
             кодемобиля. Однако реальная угловая скорость может отличаться от данного значения вследствие
-            столкновений кодемобиля с другими игровыми объектами.*/
+            столкновений кодемобиля с другими игровыми объектами.*//*
 
-        speedVector = speedVector.rotate(turn) //TODO real physic for rotation
-        speedX = speedVector.x
-        speedY = speedVector.y
+        speedVector = speedVector.rotate(turn) //TODO real physic for rotation*/
+
+        val angleV = Point2D(angle)
+        val Vl = angleV.x * speedVector.x + angleV.y * speedVector.y
+        var Vaw = wheelTurn * mys.game.carAngularSpeedFactor * Vl
+
+        var angleVwX = Math.cos(Vaw)
+        var angleVwY = Math.sin(Vaw)
+
+
+        var newAX = angleVwX * angleV.x - angleVwY * angleV.y
+        var newAY = angleVwY * angleV.x + angleVwX * angleV.y
+        var angleX = newAX
+        var angleY = newAY
+
+        var Vl2 = angleX * speedVector.x + angleY * speedVector.y
+        var Vr2 = angleX * speedVector.y - angleY * speedVector.x
+
+        //Friction
+        val lFriction = mys.game.carLengthwiseMovementFrictionFactor
+        val cFriction = mys.game.carCrosswiseMovementFrictionFactor
+        if (Vl2 > lFriction) {
+            Vl2 -= lFriction
+        } else if (Vl2 < -lFriction) {
+            Vl2 += lFriction
+        } else {
+            Vl2 = 0.0
+        }
+
+        //Friction
+        if (Vr2 > cFriction) {
+            Vr2 -= cFriction
+        } else if (Vr2 < -cFriction) {
+            Vr2 += cFriction
+        } else {
+            Vr2 = 0.0
+        }
+
+        speedX = angleX * Vl2 - angleY * Vr2
+        speedY = angleY * Vl2 + angleX * Vr2
+
+        angle = Point2D.angle(angleX, angleY)
+        /*speedX = speedVector.x
+        speedY = speedVector.y*/
         var i = 10
     }
 

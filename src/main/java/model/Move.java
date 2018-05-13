@@ -124,4 +124,13 @@ public class Move {
     public void setSpillOil(boolean spillOil) {
         this.spillOil = spillOil;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Move{");
+        sb.append("enginePower=").append(enginePower);
+        sb.append(", wheelTurn=").append(wheelTurn);
+        sb.append('}');
+        return sb.toString();
+    }
 }

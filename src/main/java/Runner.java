@@ -44,6 +44,8 @@ public final class Runner {
 
                 strategies[strategyIndex] = strategy;
                 addShower(strategy);
+
+                // strategies[strategyIndex] = new MyStrategy();
             }
 
             PlayerContext playerContext;

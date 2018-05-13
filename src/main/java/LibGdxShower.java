@@ -74,7 +74,7 @@ public class LibGdxShower implements ApplicationListener {
         Gdx.gl.glDisable(GL20.GL_BLEND);
         if (!resized && data != null) {
             resized = true;
-            float camWidth = (float) (data.game.getWorldWidth() * data.game.getTrackTileSize());
+            float camWidth = (float) (data.game.getTrackTileSize() * 8);
             camWidth = (float) (camWidth / 1.2);
             //You probably want to keep the aspect ration of the window
             float camHeight = camWidth * ((float) Runner.LIBGDX_WIDTH / (float) Runner.LIBGDX_WIDTH);

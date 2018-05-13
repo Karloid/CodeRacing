@@ -128,9 +128,12 @@ class MyKStrategy : Strategy {
             }
             cntx.isMovingBackward = true
         } else if (i in n..to) {
-                move1.wheelTurn = -1.0
-                move1.wheelTurn += (i - n) * (2 / spread.toFloat())
+            if (i % 3 == 0) {
+                move1.enginePower = -1.0
             }
+            move1.wheelTurn = -1.0
+            move1.wheelTurn += (i - n) * (2 / spread.toFloat())
+        }
         return move1
     }
 
